@@ -89,6 +89,7 @@ public partial class CharacterNode : Node2D
         {
             Position = _mapRoot.GetTileCenter(mapCoords);
             _mapRoot.UpdateFog(mapCoords, SightRadius);
+            _mapRoot.NotifyTileEntered(mapCoords);
         }
     }
 
