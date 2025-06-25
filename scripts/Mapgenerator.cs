@@ -11,6 +11,12 @@ public partial class MapGenerator : Node
     public int Seed = 12345;
 
     /// <summary>
+    /// Offset coordinates that mark transitions to other maps.
+    /// The value is an identifier for the destination map.
+    /// </summary>
+    public Dictionary<Vector2I, string> TransitionTiles { get; private set; } = new();
+
+    /// <summary>
     /// Creates an irregular collection of axial coordinates representing
     /// the playable map area. The same seed always returns the same shape.
     /// </summary>
@@ -65,16 +71,48 @@ public partial class MapGenerator : Node
             mapData[axial] = type;
         }
 
-        // Beispiel: Übergang nach Norden erzwingen
-        var shapeSet = new HashSet<Vector2I>(shape);
-        for (int i = 0; i < Width; i++)
-        {
-            var pos = HexUtils.OffsetToAxial(new Vector2I(i, 0));
-            if (shapeSet.Contains(pos))
-                mapData[pos] = Enums.ZoneType.Safe; // oder ein spezieller Übergangstyp
-        }
+        PlaceTransitions(mapData);
 
         return mapData;
+    }
+
+    private void PlaceTransitions(Dictionary<Vector2I, Enums.ZoneType> mapData)
+    {
+        TransitionTiles.Clear();
+
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+        rng.Seed = (ulong)Seed;
+
+        List<Vector2I> north = new();
+        List<Vector2I> south = new();
+        List<Vector2I> west = new();
+        List<Vector2I> east = new();
+
+        foreach (var kvp in mapData)
+        {
+            if (kvp.Value == Enums.ZoneType.Unpassable)
+                continue;
+
+            var offset = HexUtils.AxialToOffset(kvp.Key);
+
+            if (offset.Y == 0)
+                north.Add(offset);
+            if (offset.Y == Height - 1)
+                south.Add(offset);
+            if (offset.X == 0)
+                west.Add(offset);
+            if (offset.X == Width - 1)
+                east.Add(offset);
+        }
+
+        if (north.Count > 0)
+            TransitionTiles[north[rng.RandiRange(0, north.Count - 1)]] = "north";
+        if (south.Count > 0)
+            TransitionTiles[south[rng.RandiRange(0, south.Count - 1)]] = "south";
+        if (west.Count > 0)
+            TransitionTiles[west[rng.RandiRange(0, west.Count - 1)]] = "west";
+        if (east.Count > 0)
+            TransitionTiles[east[rng.RandiRange(0, east.Count - 1)]] = "east";
     }
 
     /// <summary>
