@@ -76,4 +76,46 @@ public partial class MapGenerator : Node
 
         return mapData;
     }
+
+    /// <summary>
+    /// Places a list of locations on passable tiles within their hinted quadrant.
+    /// The method is deterministic with regard to the generator seed.
+    /// </summary>
+    public void PlaceLocations(Dictionary<Vector2I, Enums.ZoneType> mapData, IList<LocationInfo> locations)
+    {
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+        rng.Seed = (ulong)Seed;
+
+        foreach (var location in locations)
+        {
+            List<Vector2I> candidates = new List<Vector2I>();
+
+            foreach (var kvp in mapData)
+            {
+                if (kvp.Value == Enums.ZoneType.Unpassable)
+                    continue;
+
+                Vector2I offset = HexUtils.AxialToOffset(kvp.Key);
+
+                bool inQuadrant = location.Hint switch
+                {
+                    DirectionHint.NorthWest => offset.X < Width / 2 && offset.Y < Height / 2,
+                    DirectionHint.NorthEast => offset.X >= Width / 2 && offset.Y < Height / 2,
+                    DirectionHint.SouthWest => offset.X < Width / 2 && offset.Y >= Height / 2,
+                    DirectionHint.SouthEast => offset.X >= Width / 2 && offset.Y >= Height / 2,
+                    _ => false
+                };
+
+                if (inQuadrant)
+                    candidates.Add(kvp.Key);
+            }
+
+            if (candidates.Count == 0)
+                continue;
+
+            int index = rng.RandiRange(0, candidates.Count - 1);
+            Vector2I chosenAxial = candidates[index];
+            location.Coordinates = chosenAxial;
+        }
+    }
 }
