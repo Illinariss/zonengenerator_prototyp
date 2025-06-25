@@ -13,7 +13,7 @@ public partial class MapController : Node
 
     [Export] public MapGenerator Generator;
 
-    public void _Ready()
+    public override void _Ready()
     {
         var mapData = Generator.Generate();
 
