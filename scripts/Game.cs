@@ -7,7 +7,7 @@ public partial class Game : Control
 
     private Control previousContent;
 
-    private static MapRoot CreateApp(int width, int height, IList<LocationInfo> locations, int seed)
+    private static MapRoot CreateMapp(int width, int height, IList<LocationInfo> locations, int seed)
     {
         var mapScene = GD.Load<PackedScene>("res://scenes/map_root.tscn");
         var mapRoot = mapScene.Instantiate<MapRoot>();
@@ -27,7 +27,7 @@ public partial class Game : Control
         return mapRoot;
     }
 
-    public MapRoot CreateSmallApp()
+    public MapRoot CreateSmallMap()
     {
         var locations = new List<LocationInfo>
         {
@@ -35,10 +35,10 @@ public partial class Game : Control
             new LocationInfo("Cave", DirectionHint.SouthEast)
         };
 
-        return CreateApp(15, 15, locations, 1);
+        return CreateMapp(15, 15, locations, 1);
     }
 
-    public MapRoot CreateMediumApp()
+    public MapRoot CreateMediumMap()
     {
         var locations = new List<LocationInfo>
         {
@@ -47,10 +47,10 @@ public partial class Game : Control
             new LocationInfo("Farm", DirectionHint.SouthWest)
         };
 
-        return CreateApp(25, 20, locations, 2);
+        return CreateMapp(25, 20, locations, 2);
     }
 
-    public MapRoot CreateLargeApp()
+    public MapRoot CreateLargeMap()
     {
         var locations = new List<LocationInfo>
         {
@@ -61,7 +61,7 @@ public partial class Game : Control
             new LocationInfo("Temple", DirectionHint.NorthEast)
         };
 
-        return CreateApp(40, 30, locations, 3);
+        return CreateMapp(40, 30, locations, 3);
     }
 
     public override void _Ready()
