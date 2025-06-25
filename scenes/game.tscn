@@ -53,3 +53,16 @@ theme_override_constants/margin_bottom = 10
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonMedium" to="." method="_on_medium_map_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonLarge" to="." method="_on_large_map_pressed"]
+
+[node name="RecenterButton" type="Button" parent="."]
+layout_mode = 3
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -110.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 40.0
+text = "Recenter"
+visible = false
