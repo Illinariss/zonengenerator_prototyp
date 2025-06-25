@@ -15,4 +15,3 @@ void fragment() {
     tex.rgb *= pulse;
     COLOR = vec4(tex.rgb, tex.a);
 }
-

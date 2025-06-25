@@ -1,7 +1,7 @@
-[gd_resource type="TileSet" load_steps=9 format=3 uid="uid://h4m3bkbos37e"]
+[gd_resource type="TileSet" load_steps=8 format=3 uid="uid://h4m3bkbos37e"]
 
-[ext_resource type="Texture2D" uid="uid://bxs6mgdcb82yv" path="res://assets/textures/Terrain 1  Outline - 128x128.png" id="1_tex"]
-[ext_resource type="Shader" uid="uid://ac297b56" path="res://assets/textures/shaders/fog_shader.gdshader" id="2_shader"]
+[ext_resource type="Shader" path="res://assets/textures/shaders/fog_shader.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" uid="uid://bwkygyyqh8fx3" path="res://assets/textures/Terrain 1 - Flat - No Outline - 128x128.png" id="2_y4xh8"]
 
 [sub_resource type="ShaderMaterial" id="FogMaterial_0"]
 shader = ExtResource("2_shader")
@@ -19,12 +19,8 @@ shader_parameter/alpha = 0.5
 shader = ExtResource("2_shader")
 shader_parameter/alpha = 0.25
 
-[sub_resource type="ShaderMaterial" id="FogMaterial_4"]
-shader = ExtResource("2_shader")
-shader_parameter/alpha = 0.0
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0"]
-texture = ExtResource("1_tex")
+texture = ExtResource("2_y4xh8")
 texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
 0:0/0/material = SubResource("FogMaterial_0")
@@ -34,8 +30,14 @@ texture_region_size = Vector2i(128, 128)
 2:0/0/material = SubResource("FogMaterial_2")
 3:0/0 = 0
 3:0/0/material = SubResource("FogMaterial_3")
-4:0/0 = 0
-4:0/0/material = SubResource("FogMaterial_4")
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
 
 [resource]
 tile_shape = 3
