@@ -9,6 +9,7 @@ public partial class MapRoot : Node2D
     [Export] public MapGenerator? Generator;
 
     TileMapLayer visual, logic, fog, overlay;
+    Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
 
     public override void _Ready()
     {
@@ -51,17 +52,26 @@ public partial class MapRoot : Node2D
         overlay.Clear();
 
         // Generate terrain here
+        zoneData.Clear();
         IEnumerable<Vector2I> axialCoords;
         if (Generator != null)
         {
-            axialCoords = Generator.GenerateShape();
+            zoneData = Generator.Generate();
+            axialCoords = zoneData.Keys;
         }
         else
         {
+            zoneData = new();
             List<Vector2I> temp = new();
             for (int x = 0; x < width; x++)
+            {
                 for (int y = 0; y < height; y++)
-                    temp.Add(HexUtils.OffsetToAxial(new Vector2I(x, y)));
+                {
+                    var ax = HexUtils.OffsetToAxial(new Vector2I(x, y));
+                    temp.Add(ax);
+                    zoneData[ax] = Enums.ZoneType.Safe;
+                }
+            }
             axialCoords = temp;
         }
 
@@ -71,6 +81,7 @@ public partial class MapRoot : Node2D
             visual.SetCell(coords, 0, new Vector2I(2, 2));
             overlay.SetCell(coords, 0, new Vector2I(0, 0));
             fog.SetCell(coords, 0, new Vector2I(0, 0));
+            logic.SetCell(coords, 0, new Vector2I((int)zoneData[axial], 0));
             usedtiles.Add(coords);
         }
     }
@@ -106,6 +117,43 @@ public partial class MapRoot : Node2D
     public Vector2I LocalToMap(Vector2 position)
     {
         return visual.LocalToMap(position);
+    }
+
+    public List<Vector2I> ComputePath(Vector2I startOffset, Vector2I targetOffset)
+    {
+        var startAxial = HexUtils.OffsetToAxial(startOffset);
+        var targetAxial = HexUtils.OffsetToAxial(targetOffset);
+        return Pathfinder.FindPath(startAxial, targetAxial, ax =>
+        {
+            return zoneData.ContainsKey(ax) && zoneData[ax] != Enums.ZoneType.Unpassable;
+        });
+    }
+
+    public void DrawPath(List<Vector2I> axialPath)
+    {
+        foreach (var tile in usedtiles)
+        {
+            overlay.SetCell(tile, 0, new Vector2I(0, 0));
+        }
+
+        foreach (var axial in axialPath)
+        {
+            var offset = HexUtils.AxialToOffset(axial);
+            overlay.SetCell(offset, 0, new Vector2I(1, 0));
+        }
+    }
+
+    public async System.Threading.Tasks.Task AnimateCharacterAlongPath(CharacterNode character, List<Vector2I> axialPath)
+    {
+        foreach (var axial in axialPath)
+        {
+            var offset = HexUtils.AxialToOffset(axial);
+            Vector2 target = GetTileCenter(offset);
+            var tween = CreateTween();
+            tween.TweenProperty(character, "position", target, 0.2f);
+            await ToSignal(tween, "finished");
+            character.MoveTo(offset);
+        }
     }
 
 
