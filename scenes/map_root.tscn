@@ -5,6 +5,7 @@
 [ext_resource type="TileSet" uid="uid://dkheur6etnl5a" path="res://tilesets/logic_tile_set.tres" id="2_155yj"]
 [ext_resource type="TileSet" uid="uid://h4m3bkbos37e" path="res://tilesets/fog_tile_set.tres" id="3_2rd5c"]
 [ext_resource type="TileSet" uid="uid://d3241dpbnefp0" path="res://tilesets/overlay_tile_set.tres" id="4_22de6"]
+[ext_resource type="Script" uid="uid://x9v4tb6k3u8y" path="res://scripts/MapCameraController.cs" id="5_cam"]
 
 [node name="MapRoot" type="Node2D"]
 script = ExtResource("1_155yj")
@@ -27,3 +28,6 @@ tile_set = ExtResource("3_2rd5c")
 [node name="TileMap_Overlay" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
 tile_set = ExtResource("4_22de6")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("5_cam")
