@@ -85,6 +85,9 @@ public partial class Game : Control
         mapContainerNode.AddChild(map);
         map.Visible = true;
         map.Scale = Vector2.One;
+        var cam = map.GetNodeOrNull<Camera2D>("Camera2D");
+        if (cam != null)
+            cam.MakeCurrent();
     }
 
     private void _on_small_map_pressed()
