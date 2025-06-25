@@ -11,6 +11,8 @@ public partial class MapRoot : Node2D
     TileMapLayer visual, logic, fog, overlay;
     Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
 
+    public event Action<Vector2I>? OnTileEntered;
+
     public override void _Ready()
     {
         visual = GetNode<TileMapLayer>("%TileMap_Visual");
@@ -153,7 +155,13 @@ public partial class MapRoot : Node2D
             tween.TweenProperty(character, "position", target, 0.2f);
             await ToSignal(tween, "finished");
             character.MoveTo(offset);
+            OnTileEntered?.Invoke(offset);
         }
+    }
+
+    public void NotifyTileEntered(Vector2I tile)
+    {
+        OnTileEntered?.Invoke(tile);
     }
 
 
