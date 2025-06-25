@@ -30,21 +30,48 @@ public partial class MapRoot : Node2D
 
     Vector2I lastTileUnderMouseCoordinates;
 
+    void ClearPreview()
+    {
+        DrawPath(new List<Vector2I>());
+        lastTileUnderMouseCoordinates = Vector2I.Zero;
+    }
+
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event is InputEventMouseMotion ev)
         {
-            var tile_coords = overlay.LocalToMap(overlay.ToLocal(ev.GlobalPosition));
-            if (lastTileUnderMouseCoordinates != tile_coords && usedtiles.Contains(tile_coords))
+            var tileCoords = overlay.LocalToMap(overlay.ToLocal(ev.GlobalPosition));
+
+            if (!usedtiles.Contains(tileCoords))
             {
-                overlay.SetCell(lastTileUnderMouseCoordinates, 0, new Vector2I(0, 0));
-                lastTileUnderMouseCoordinates = tile_coords;
-                overlay.SetCell(tile_coords, 0, new Vector2I(2, 0));
+                if (lastTileUnderMouseCoordinates != Vector2I.Zero)
+                    ClearPreview();
+                return;
             }
-            else if (lastTileUnderMouseCoordinates != tile_coords && lastTileUnderMouseCoordinates != Vector2I.Zero)
+
+            if (tileCoords == lastTileUnderMouseCoordinates)
+                return;
+
+            lastTileUnderMouseCoordinates = tileCoords;
+
+            var character = GetNodeOrNull<CharacterNode>("CharacterNode");
+            if (character == null)
             {
-                overlay.SetCell(lastTileUnderMouseCoordinates, 0, new Vector2I(0, 0));
-                lastTileUnderMouseCoordinates = Vector2I.Zero;
+                ClearPreview();
+                return;
+            }
+
+            var startOffset = visual.LocalToMap(character.Position);
+            var path = ComputePath(startOffset, tileCoords);
+
+            if (path.Count > 0)
+            {
+                DrawPath(path);
+                overlay.SetCell(tileCoords, 0, new Vector2I(2, 0));
+            }
+            else
+            {
+                ClearPreview();
             }
         }
     }
