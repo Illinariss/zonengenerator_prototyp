@@ -29,12 +29,19 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer"]
 layout_mode = 2
+columns = 3
 
-[node name="btnKampf1" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Start"
+[node name="ButtonSmall" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
+text = "Small map"
 
-[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/btnKampf1" to="." method="_on_btn_kampf_1_pressed"]
+[node name="ButtonMedium" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
+text = "Medium map"
+
+[node name="ButtonLarge" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
+text = "Large map"
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonMedium" to="." method="_on_medium_map_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonLarge" to="." method="_on_large_map_pressed"]
