@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "3co6bX66RTM=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\illin\\Documents\\zonengenerator_prototyp\\Zonengenerator_Prototyp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\illin\\.nuget\\packages\\godot.sourcegenerators\\4.4.1\\godot.sourcegenerators.4.4.1.nupkg.sha512",
+    "C:\\Users\\illin\\.nuget\\packages\\godotsharp\\4.4.1\\godotsharp.4.4.1.nupkg.sha512",
+    "C:\\Users\\illin\\.nuget\\packages\\godotsharpeditor\\4.4.1\\godotsharpeditor.4.4.1.nupkg.sha512"
+  ],
+  "logs": []
+}

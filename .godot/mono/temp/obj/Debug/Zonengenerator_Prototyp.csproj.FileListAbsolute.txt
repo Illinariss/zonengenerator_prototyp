@@ -1,0 +1,17 @@
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.csproj.AssemblyReference.cache
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.AssemblyInfoInputs.cache
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.AssemblyInfo.cs
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.csproj.CoreCompileInputs.cache
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\bin\Debug\Zonengenerator_Prototyp.deps.json
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\bin\Debug\Zonengenerator_Prototyp.runtimeconfig.json
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\bin\Debug\Zonengenerator_Prototyp.dll
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\bin\Debug\Zonengenerator_Prototyp.pdb
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\bin\Debug\GodotSharp.dll
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\bin\Debug\GodotSharpEditor.dll
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengen.5CCF7E92.Up2Date
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.dll
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\refint\Zonengenerator_Prototyp.dll
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.pdb
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\Zonengenerator_Prototyp.genruntimeconfig.cache
+C:\Users\illin\Documents\zonengenerator_prototyp\.godot\mono\temp\obj\Debug\ref\Zonengenerator_Prototyp.dll

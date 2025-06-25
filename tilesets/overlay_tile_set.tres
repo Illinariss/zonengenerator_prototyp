@@ -1,0 +1,35 @@
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://d3241dpbnefp0"]
+
+[ext_resource type="Texture2D" uid="uid://bxs6mgdcb82yv" path="res://assets/textures/Terrain 1  Outline - 128x128.png" id="1_3tvxq"]
+[ext_resource type="Shader" uid="uid://cq3wjjqcfnvtu" path="res://assets/textures/shaders/map_root.gdshader" id="1_7ndro"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lf8bq"]
+shader = ExtResource("1_7ndro")
+shader_parameter/pulse_speed = 0.4
+shader_parameter/pulse_strength = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oeh0u"]
+shader = ExtResource("1_7ndro")
+shader_parameter/pulse_speed = 0.4
+shader_parameter/pulse_strength = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7ndro"]
+shader = ExtResource("1_7ndro")
+shader_parameter/pulse_speed = 0.4
+shader_parameter/pulse_strength = 0.5
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7ndro"]
+texture = ExtResource("1_3tvxq")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+1:0/0 = 0
+1:0/0/material = SubResource("ShaderMaterial_lf8bq")
+2:0/0 = 0
+2:0/0/material = SubResource("ShaderMaterial_oeh0u")
+3:0/0 = 0
+3:0/0/material = SubResource("ShaderMaterial_7ndro")
+
+[resource]
+tile_shape = 3
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_7ndro")
