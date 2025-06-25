@@ -48,7 +48,7 @@ public partial class CharacterNode : Node2D
     
     public static CharacterNode Create()
     {
-        var scene = GD.Load<PackedScene>("res://Scripts/battlesystem/CharacterNode.tscn");
+        var scene = GD.Load<PackedScene>("res://scenes/CharacterNode.tscn");
         var node = scene.Instantiate<CharacterNode>();
         return node;
     }
