@@ -6,6 +6,7 @@ public partial class MapRoot : Node2D
 {
     [Export] public int width = 100;
     [Export] public int height = 60;
+    [Export] public MapGenerator? Generator;
 
     TileMapLayer visual, logic, fog, overlay;
 
@@ -50,15 +51,26 @@ public partial class MapRoot : Node2D
         // overlay.Clear();
 
         // Generate terrain here
-        for (int x = 0; x < width; x++)
+        IEnumerable<Vector2I> axialCoords;
+        if (Generator != null)
         {
-            for (int y = 0; y < height; y++)
-            {
-                var coords = new Vector2I(x, y);
-                visual.SetCell(coords, 0, new Vector2I(2, 2));
-                overlay.SetCell(coords, 0, new Vector2I(0, 0));
-                usedtiles.Add(coords);
-            }
+            axialCoords = Generator.GenerateShape();
+        }
+        else
+        {
+            List<Vector2I> temp = new();
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    temp.Add(HexUtils.OffsetToAxial(new Vector2I(x, y)));
+            axialCoords = temp;
+        }
+
+        foreach (var axial in axialCoords)
+        {
+            var coords = HexUtils.AxialToOffset(axial);
+            visual.SetCell(coords, 0, new Vector2I(2, 2));
+            overlay.SetCell(coords, 0, new Vector2I(0, 0));
+            usedtiles.Add(coords);
         }
     }
 
