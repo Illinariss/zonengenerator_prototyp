@@ -4,8 +4,10 @@ using Godot;
 public partial class Game : Control
 {
     [Export] public PanelContainer MainContent;
+    [Export] public NodePath MapContainer;
 
     private Control previousContent;
+    private Control mapContainerNode;
 
     private static MapRoot CreateMapp(int width, int height, IList<LocationInfo> locations, int seed)
     {
@@ -68,18 +70,21 @@ public partial class Game : Control
     {
         // Handles only the first child
         previousContent = MainContent.GetChildCount() > 0 ? MainContent.GetChild<Control>(0) : null;
+        mapContainerNode = GetNode<Control>(MapContainer);
 
     }
 
     private void DisplayMap(MapRoot map)
     {
-        foreach (Node child in MainContent.GetChildren())
+        foreach (Node child in mapContainerNode.GetChildren())
         {
-            MainContent.RemoveChild(child);
+            mapContainerNode.RemoveChild(child);
             child.QueueFree();
         }
 
-        MainContent.AddChild(map);
+        mapContainerNode.AddChild(map);
+        map.Visible = true;
+        map.Scale = Vector2.One;
     }
 
     private void _on_small_map_pressed()

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b686ksu5yj3y8" path="res://scripts/Game.cs" id="1_uwrxv"]
 
-[node name="Game" type="Control" node_paths=PackedStringArray("MainContent")]
+[node name="Game" type="Control" node_paths=PackedStringArray("MainContent", "MapContainer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,6 +12,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_uwrxv")
 MainContent = NodePath("PanelContainer")
+MapContainer = NodePath("PanelContainer/MarginContainer/MapContainer")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -41,6 +42,13 @@ text = "Medium map"
 
 [node name="ButtonLarge" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
 text = "Large map"
+
+[node name="MapContainer" type="MarginContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonMedium" to="." method="_on_medium_map_pressed"]
