@@ -10,8 +10,11 @@ public partial class MapRoot : Node2D
 
     TileMapLayer visual, logic, fog, overlay;
     Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
+    Dictionary<Vector2I, string> transitions = new();
+    public IReadOnlyDictionary<Vector2I, string> Transitions => transitions;
 
     public event Action<Vector2I>? OnTileEntered;
+    public event Action<string>? OnTransitionEntered;
 
     public override void _Ready()
     {
@@ -19,6 +22,8 @@ public partial class MapRoot : Node2D
         logic = GetNode<TileMapLayer>("%TileMap_Logic");
         fog = GetNode<TileMapLayer>("%TileMap_Fog");
         overlay = GetNode<TileMapLayer>("%TileMap_Overlay");
+
+        OnTransitionEntered += destination => GD.Print($"Load map: {destination}");
 
         GenerateTerrain();
     }
@@ -55,11 +60,13 @@ public partial class MapRoot : Node2D
 
         // Generate terrain here
         zoneData.Clear();
+        transitions.Clear();
         IEnumerable<Vector2I> axialCoords;
         if (Generator != null)
         {
             zoneData = Generator.Generate();
             axialCoords = zoneData.Keys;
+            transitions = new Dictionary<Vector2I, string>(Generator.TransitionTiles);
         }
         else
         {
@@ -162,6 +169,10 @@ public partial class MapRoot : Node2D
     public void NotifyTileEntered(Vector2I tile)
     {
         OnTileEntered?.Invoke(tile);
+        if (transitions.TryGetValue(tile, out var destination))
+        {
+            OnTransitionEntered?.Invoke(destination);
+        }
     }
 
 
