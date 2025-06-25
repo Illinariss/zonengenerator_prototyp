@@ -1,11 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://dbkg6ppdfkoqc"]
+[gd_scene load_steps=7 format=3 uid="uid://dbkg6ppdfkoqc"]
 
 [ext_resource type="Script" uid="uid://b8mqpmxiplno7" path="res://scripts/MapRoot.cs" id="1_155yj"]
 [ext_resource type="TileSet" uid="uid://iwqi2v2e1p7l" path="res://tilesets/visual_tile_set.tres" id="1_yh41v"]
 [ext_resource type="TileSet" uid="uid://dkheur6etnl5a" path="res://tilesets/logic_tile_set.tres" id="2_155yj"]
 [ext_resource type="TileSet" uid="uid://h4m3bkbos37e" path="res://tilesets/fog_tile_set.tres" id="3_2rd5c"]
 [ext_resource type="TileSet" uid="uid://d3241dpbnefp0" path="res://tilesets/overlay_tile_set.tres" id="4_22de6"]
-[ext_resource type="Script" uid="uid://x9v4tb6k3u8y" path="res://scripts/MapCameraController.cs" id="5_cam"]
+[ext_resource type="Script" uid="uid://yav4tb6k3u8y" path="res://scripts/MapCameraController.cs" id="5_cam"]
 
 [node name="MapRoot" type="Node2D"]
 script = ExtResource("1_155yj")
@@ -22,6 +22,7 @@ tile_set = ExtResource("2_155yj")
 
 [node name="TileMap_Fog" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
+visible = false
 tile_set = ExtResource("3_2rd5c")
 
 [node name="TileMap_Overlay" type="TileMapLayer" parent="."]

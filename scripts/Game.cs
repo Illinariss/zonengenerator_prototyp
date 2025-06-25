@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using Godot;
 
 public partial class Game : Control
-{
-    [Export] public PanelContainer MainContent;
-    [Export] public NodePath MapContainer;
-
+{    
+    
     private Control previousContent;
-    private Control mapContainerNode;
+
+    [Export] public Control MapContainerNode { get; set; }
 
     private static MapRoot CreateMapp(int width, int height, IList<LocationInfo> locations, int seed)
     {
@@ -68,21 +67,19 @@ public partial class Game : Control
 
     public override void _Ready()
     {
-        // Handles only the first child
-        previousContent = MainContent.GetChildCount() > 0 ? MainContent.GetChild<Control>(0) : null;
-        mapContainerNode = GetNode<Control>(MapContainer);
+        
 
     }
 
     private void DisplayMap(MapRoot map)
     {
-        foreach (Node child in mapContainerNode.GetChildren())
+        foreach (Node child in MapContainerNode.GetChildren())
         {
-            mapContainerNode.RemoveChild(child);
+            MapContainerNode.RemoveChild(child);
             child.QueueFree();
         }
 
-        mapContainerNode.AddChild(map);
+        MapContainerNode.AddChild(map);
         map.Visible = true;
         map.Scale = Vector2.One;
         var cam = map.GetNodeOrNull<MapCameraController>("Camera2D");
@@ -101,18 +98,21 @@ public partial class Game : Control
 
     private void _on_small_map_pressed()
     {
+        GD.Print("_on_small_map_pressed");
         var map = CreateSmallMap();
         DisplayMap(map);
     }
 
     private void _on_medium_map_pressed()
     {
+        GD.Print("_on_medium_map_pressed");
         var map = CreateMediumMap();
         DisplayMap(map);
     }
 
     private void _on_large_map_pressed()
     {
+        GD.Print("_on_large_map_pressed");
         var map = CreateLargeMap();
         DisplayMap(map);
     }

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Zonengenerator_Prototyp"
-run/main_scene="uid://dbkg6ppdfkoqc"
+run/main_scene="uid://i0oq6chllo6s"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 

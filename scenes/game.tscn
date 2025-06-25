@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b686ksu5yj3y8" path="res://scripts/Game.cs" id="1_uwrxv"]
 
-[node name="Game" type="Control" node_paths=PackedStringArray("MainContent", "MapContainer")]
+[node name="Game" type="Control" node_paths=PackedStringArray("MapContainerNode")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,14 +11,33 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_uwrxv")
-MainContent = NodePath("PanelContainer")
-MapContainer = NodePath("PanelContainer/MarginContainer/MapContainer")
+MapContainerNode = NodePath("PanelContainer/MarginContainer/MapContainer")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+columns = 3
+
+[node name="ButtonSmall" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Small map"
+
+[node name="ButtonMedium" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Medium map"
+
+[node name="ButtonLarge" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Large map"
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 48.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -30,19 +49,6 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer"]
-layout_mode = 2
-columns = 3
-
-[node name="ButtonSmall" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
-text = "Small map"
-
-[node name="ButtonMedium" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
-text = "Medium map"
-
-[node name="ButtonLarge" type="Button" parent="PanelContainer/MarginContainer/GridContainer"]
-text = "Large map"
-
 [node name="MapContainer" type="MarginContainer" parent="PanelContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
@@ -50,19 +56,18 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
-[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonMedium" to="." method="_on_medium_map_pressed"]
-[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/ButtonLarge" to="." method="_on_large_map_pressed"]
-
 [node name="RecenterButton" type="Button" parent="."]
-layout_mode = 3
+visible = false
+layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -110.0
 offset_top = 10.0
 offset_right = -10.0
 offset_bottom = 40.0
 text = "Recenter"
-visible = false
+
+[connection signal="pressed" from="GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
+[connection signal="pressed" from="GridContainer/ButtonMedium" to="." method="_on_medium_map_pressed"]
+[connection signal="pressed" from="GridContainer/ButtonLarge" to="." method="_on_large_map_pressed"]
