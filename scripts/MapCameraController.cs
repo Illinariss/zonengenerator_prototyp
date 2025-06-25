@@ -6,11 +6,34 @@ public partial class MapCameraController : Camera2D
     [Export] public int ScrollBorder = 20;
     [Export] public float ScrollSpeed = 400f;
     [Export] public MapRoot? Map;
+    [Export] public NodePath CharacterPath = "";
+    [Export] public NodePath RecenterButtonPath = "";
+
+    private CharacterNode? _character;
+    private Button? _recenterButton;
 
     public override void _Ready()
     {
         if (Map == null)
             Map = GetParent<MapRoot>();
+
+        if (CharacterPath != null && CharacterPath.ToString() != "")
+            _character = GetNodeOrNull<CharacterNode>(CharacterPath);
+        else
+            _character = GetParent().GetNodeOrNull<CharacterNode>("CharacterNode");
+
+        if (RecenterButtonPath != null && RecenterButtonPath.ToString() != "")
+            _recenterButton = GetNodeOrNull<Button>(RecenterButtonPath);
+
+        if (_recenterButton != null)
+        {
+            _recenterButton.Hide();
+            _recenterButton.Pressed += () =>
+            {
+                RecenterOnCharacter();
+                _recenterButton.Hide();
+            };
+        }
     }
 
     public override void _Process(double delta)
@@ -37,6 +60,24 @@ public partial class MapCameraController : Camera2D
             Position += dir.Normalized() * ScrollSpeed * (float)delta;
             ClampToMap(viewportSize);
         }
+
+        if (_character != null && _recenterButton != null)
+        {
+            Rect2 visible = new Rect2(GlobalPosition - viewportSize / 2, viewportSize);
+            bool inside = visible.HasPoint(_character.GlobalPosition);
+            if (inside)
+                _recenterButton.Hide();
+            else
+                _recenterButton.Show();
+        }
+    }
+
+    private void RecenterOnCharacter()
+    {
+        if (_character == null)
+            return;
+        Position = _character.GlobalPosition;
+        ClampToMap(GetViewportRect().Size);
     }
 
     private void ClampToMap(Vector2 viewportSize)
