@@ -66,15 +66,38 @@ public partial class Game : Control
 
     public override void _Ready()
     {
-        // // Handles only the first child
-         previousContent = MainContent.GetChildCount() > 0 ? MainContent.GetChild<Control>(0) : null;
+        // Handles only the first child
+        previousContent = MainContent.GetChildCount() > 0 ? MainContent.GetChild<Control>(0) : null;
 
-    }    
+    }
 
-    internal void _on_btn_kampf_1_pressed()
+    private void DisplayMap(MapRoot map)
     {
-        
+        foreach (Node child in MainContent.GetChildren())
+        {
+            MainContent.RemoveChild(child);
+            child.QueueFree();
+        }
 
+        MainContent.AddChild(map);
+    }
+
+    private void _on_small_map_pressed()
+    {
+        var map = CreateSmallMap();
+        DisplayMap(map);
+    }
+
+    private void _on_medium_map_pressed()
+    {
+        var map = CreateMediumMap();
+        DisplayMap(map);
+    }
+
+    private void _on_large_map_pressed()
+    {
+        var map = CreateLargeMap();
+        DisplayMap(map);
     }
 
 
