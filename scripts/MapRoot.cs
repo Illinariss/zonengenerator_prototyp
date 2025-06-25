@@ -13,8 +13,8 @@ public partial class MapRoot : Node2D
     public override void _Ready()
     {
         visual = GetNode<TileMapLayer>("%TileMap_Visual");
-        // logic = GetNode<TileMapLayer>("%TileMap_Logic");
-        // fog = GetNode<TileMapLayer>("%TileMap_Fog");
+        logic = GetNode<TileMapLayer>("%TileMap_Logic");
+        fog = GetNode<TileMapLayer>("%TileMap_Fog");
         overlay = GetNode<TileMapLayer>("%TileMap_Overlay");
 
         GenerateTerrain();
@@ -46,9 +46,9 @@ public partial class MapRoot : Node2D
     public void GenerateTerrain()
     {
         visual.Clear();
-        // logic.Clear();
-        // fog.Clear();
-        // overlay.Clear();
+        logic.Clear();
+        fog.Clear();
+        overlay.Clear();
 
         // Generate terrain here
         IEnumerable<Vector2I> axialCoords;
@@ -70,8 +70,42 @@ public partial class MapRoot : Node2D
             var coords = HexUtils.AxialToOffset(axial);
             visual.SetCell(coords, 0, new Vector2I(2, 2));
             overlay.SetCell(coords, 0, new Vector2I(0, 0));
+            fog.SetCell(coords, 0, new Vector2I(0, 0));
             usedtiles.Add(coords);
         }
+    }
+
+    public void UpdateFog(Vector2I playerPosition, int sightRadius)
+    {
+        var centerAxial = HexUtils.OffsetToAxial(playerPosition);
+        var visibleHexes = HexUtils.GetHexesInRange(centerAxial, sightRadius);
+        var visibleSet = new HashSet<Vector2I>(visibleHexes);
+
+        foreach (var tile in usedtiles)
+        {
+            var axial = HexUtils.OffsetToAxial(tile);
+            int distance = HexUtils.Distance(centerAxial, axial);
+            if (visibleSet.Contains(axial))
+            {
+                float ratio = (float)distance / Math.Max(1, sightRadius);
+                int index = 4 - Mathf.Clamp(Mathf.FloorToInt(ratio * 4), 0, 4);
+                fog.SetCell(tile, 0, new Vector2I(index, 0));
+            }
+            else
+            {
+                fog.SetCell(tile, 0, new Vector2I(0, 0));
+            }
+        }
+    }
+
+    public Vector2 GetTileCenter(Vector2I tile)
+    {
+        return visual.MapToLocal(tile) + visual.TileSet.TileSize / 2;
+    }
+
+    public Vector2I LocalToMap(Vector2 position)
+    {
+        return visual.LocalToMap(position);
     }
 
 
