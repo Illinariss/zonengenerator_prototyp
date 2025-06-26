@@ -4,22 +4,36 @@ using System;
 using System.Collections.Generic;
 
 
+/// <summary>
+/// Provides procedural generation of hex maps including transitions and
+/// location placement.
+/// </summary>
 public partial class MapGenerator : Node
 {
+    /// <summary>Width of the map in tiles.</summary>
     public int Width = 20;
+
+    /// <summary>Height of the map in tiles.</summary>
     public int Height = 20;
+
+    /// <summary>Seed value used for deterministic generation.</summary>
     public int Seed = 12345;
 
     /// <summary>
     /// Offset coordinates that mark transitions to other maps.
     /// The value is an identifier for the destination map.
     /// </summary>
+    /// <summary>
+    /// Offset coordinates that mark transitions to other maps. The value is an
+    /// identifier for the destination map.
+    /// </summary>
     public Dictionary<Vector2I, string> TransitionTiles { get; private set; } = new();
 
     /// <summary>
-    /// Creates an irregular collection of axial coordinates representing
-    /// the playable map area. The same seed always returns the same shape.
+    /// Creates an irregular collection of axial coordinates representing the
+    /// playable area. The same seed always produces the same shape.
     /// </summary>
+    /// <returns>List of axial coordinates describing the map shape.</returns>
     public List<Vector2I> GenerateShape()
     {
         RandomNumberGenerator rng = new RandomNumberGenerator();
@@ -49,6 +63,11 @@ public partial class MapGenerator : Node
         return shape;
     }
 
+    /// <summary>
+    /// Generates a dictionary of axial coordinates mapped to zone types for the
+    /// map using the configured seed.
+    /// </summary>
+    /// <returns>Dictionary of axial coordinates to zone types.</returns>
     public Dictionary<Vector2I, Enums.ZoneType> Generate()
     {
         RandomNumberGenerator rng = new RandomNumberGenerator();
@@ -116,9 +135,11 @@ public partial class MapGenerator : Node
     }
 
     /// <summary>
-    /// Places a list of locations on passable tiles within their hinted quadrant.
-    /// The method is deterministic with regard to the generator seed.
+    /// Places a list of locations on passable tiles within their hinted
+    /// quadrant. The method is deterministic with regard to the generator seed.
     /// </summary>
+    /// <param name="mapData">Generated zone data.</param>
+    /// <param name="locations">Locations to place.</param>
     public void PlaceLocations(Dictionary<Vector2I, Enums.ZoneType> mapData, IList<LocationInfo> locations)
     {
         RandomNumberGenerator rng = new RandomNumberGenerator();

@@ -2,17 +2,40 @@ using Godot;
 using System;
 using System.Runtime.CompilerServices;
 
+/// <summary>
+/// Node representing the controllable character on the map. It handles
+/// movement, fog of war updates and click interactions.
+/// </summary>
 public partial class CharacterNode : Node2D
 {
+    /// <summary>
+    /// Signal emitted when the character sprite is clicked with the left mouse
+    /// button.
+    /// </summary>
     [Signal]
     public delegate void CharacterClickedEventHandler(CharacterNode node);
-    [Export] public Texture2D CharacterImage;
-    [Export] public int SightRadius = 3;
+
+    /// <summary>
+    /// Optional texture used for the character sprite.
+    /// </summary>
+    [Export]
+    public Texture2D CharacterImage;
+
+    /// <summary>
+    /// Number of hexes the character can see. Used for fog of war updates.
+    /// </summary>
+    [Export]
+    public int SightRadius = 3;
     private Sprite2D _sprite;
     private MapRoot? _mapRoot;
     private Vector2I _mapCoords = Vector2I.Zero;
 
 
+    /// <summary>
+    /// Called by Godot when the node is added to the scene tree. Initializes
+    /// sprite, connects input events and updates the fog of war for the initial
+    /// position.
+    /// </summary>
     public override void _Ready()
     {
         _sprite = GetNode<Sprite2D>("%CharacterTexture");
@@ -44,6 +67,11 @@ public partial class CharacterNode : Node2D
     {
     }
 
+    /// <summary>
+    /// Handles movement input for WASD/arrow keys and updates the character
+    /// position on the map when possible.
+    /// </summary>
+    /// <param name="@event">Input event received from Godot.</param>
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event is InputEventKey key && key.Pressed && !key.Echo)
@@ -87,6 +115,11 @@ public partial class CharacterNode : Node2D
         }
     }
 
+    /// <summary>
+    /// Moves the character to the specified map coordinates and updates the fog
+    /// of war. If attached to a map, also notifies the map of the movement.
+    /// </summary>
+    /// <param name="mapCoords">Target tile coordinates in offset space.</param>
     public void MoveTo(Vector2I mapCoords)
     {
         _mapCoords = mapCoords;
@@ -98,6 +131,10 @@ public partial class CharacterNode : Node2D
         }
     }
 
+    /// <summary>
+    /// Instantiates the <see cref="CharacterNode"/> from its packed scene.
+    /// </summary>
+    /// <returns>The newly created node.</returns>
     public static CharacterNode Create()
     {
         var scene = GD.Load<PackedScene>("res://scenes/CharacterNode.tscn");

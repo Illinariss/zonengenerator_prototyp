@@ -1,10 +1,17 @@
 using System.Collections.Generic;
 using Godot;
 
+/// <summary>
+/// Main UI control that manages map creation and switching in the prototype.
+/// </summary>
 public partial class Game : Control
 {
 
-    [Export] public Control MapContainerNode { get; set; }
+    /// <summary>
+    /// Node that will hold the currently displayed map scene.
+    /// </summary>
+    [Export]
+    public Control MapContainerNode { get; set; }
 
     private static MapRoot CreateMap(int width, int height, IList<LocationInfo> locations, int seed)
     {
@@ -27,6 +34,10 @@ public partial class Game : Control
         return mapRoot;
     }
 
+    /// <summary>
+    /// Creates a small demo map with a couple of locations.
+    /// </summary>
+    /// <returns>Generated <see cref="MapRoot"/> instance.</returns>
     public MapRoot CreateSmallMap()
     {
         var locations = new List<LocationInfo>
@@ -38,6 +49,9 @@ public partial class Game : Control
         return CreateMap(15, 15, locations, 1);
     }
 
+    /// <summary>
+    /// Creates a medium sized demo map.
+    /// </summary>
     public MapRoot CreateMediumMap()
     {
         var locations = new List<LocationInfo>
@@ -50,6 +64,9 @@ public partial class Game : Control
         return CreateMap(25, 20, locations, 2);
     }
 
+    /// <summary>
+    /// Creates a large demo map with several locations.
+    /// </summary>
     public MapRoot CreateLargeMap()
     {
         var locations = new List<LocationInfo>
@@ -64,6 +81,9 @@ public partial class Game : Control
         return CreateMap(40, 30, locations, 3);
     }
 
+    /// <summary>
+    /// Called when the node enters the scene tree.
+    /// </summary>
     public override void _Ready()
     {
         

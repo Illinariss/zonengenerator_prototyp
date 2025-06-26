@@ -1,8 +1,18 @@
 using Godot;
 using System.Collections.Generic;
 
+/// <summary>
+/// Simple breadth-first search pathfinding on a hex grid.
+/// </summary>
 public static class Pathfinder
 {
+    /// <summary>
+    /// Finds a path between two axial coordinates if one exists.
+    /// </summary>
+    /// <param name="start">Start axial coordinate.</param>
+    /// <param name="goal">Goal axial coordinate.</param>
+    /// <param name="isPassable">Predicate that returns true for passable hexes.</param>
+    /// <returns>List of axial coordinates representing the path or an empty list if none.</returns>
     public static List<Vector2I> FindPath(Vector2I start, Vector2I goal, System.Func<Vector2I, bool> isPassable)
     {
         Queue<Vector2I> frontier = new();
