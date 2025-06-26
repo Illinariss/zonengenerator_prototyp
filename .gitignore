@@ -13,3 +13,7 @@ mono
 temp/
 *.tmp
 *~
+
+# Godot offline packages
+Godot_v*.zip
+Godot_v*/
