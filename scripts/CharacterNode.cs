@@ -77,8 +77,18 @@ public partial class CharacterNode : Node2D
 
             if (delta != Vector2I.Zero)
             {
-                _mapCoords += delta;
-                MoveTo(_mapCoords);
+                var target = _mapCoords + delta;
+                if (_mapRoot != null)
+                {
+                    var path = _mapRoot.ComputePath(_mapCoords, target);
+                    if (path.Count > 0)
+                        MoveTo(target);
+                }
+                else
+                {
+                    _mapCoords = target;
+                    MoveTo(target);
+                }
             }
         }
     }
