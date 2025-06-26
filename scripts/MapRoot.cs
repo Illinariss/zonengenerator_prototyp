@@ -318,7 +318,7 @@ public partial class MapRoot : Node2D
             }
             else if (discoveredTiles.Contains(tile))
             {
-                fog.SetCell(tile, 0, new Vector2I(4, 0));
+                fog.SetCell(tile, 0, new Vector2I(3, 0));
             }
             else
             {
