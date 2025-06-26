@@ -141,8 +141,8 @@ public partial class MapCameraController : Camera2D
         if (Map == null)
             return;
 
-        int mapWidth = Map.Generator != null ? Map.Generator.Width : Map.width;
-        int mapHeight = Map.Generator != null ? Map.Generator.Height : Map.height;
+        int mapWidth = Map.Generator != null ? Map.Generator.HexagonsWidth : Map.width;
+        int mapHeight = Map.Generator != null ? Map.Generator.HexagonsHeight : Map.height;
         var tilemap = Map.GetNode<TileMapLayer>("%TileMap_Visual");
         Vector2 tileSize = tilemap.TileSet.TileSize;
 

@@ -11,10 +11,10 @@ using System.Collections.Generic;
 public partial class MapGenerator : Node
 {
     /// <summary>Width of the map in tiles.</summary>
-    public int Width = 20;
+    public int HexagonsWidth = 20;
 
     /// <summary>Height of the map in tiles.</summary>
-    public int Height = 20;
+    public int HexagonsHeight = 20;
 
     /// <summary>Seed value used for deterministic generation.</summary>
     public int Seed = 12345;
@@ -41,13 +41,13 @@ public partial class MapGenerator : Node
 
         List<Vector2I> shape = new List<Vector2I>();
 
-        Vector2I centerOffset = new Vector2I(Width / 2, Height / 2);
+        Vector2I centerOffset = new Vector2I(HexagonsWidth / 2, HexagonsHeight / 2);
         Vector2I centerAxial = HexUtils.OffsetToAxial(centerOffset);
-        float baseRadius = Math.Min(Width, Height) / 2f;
+        float baseRadius = Math.Min(HexagonsWidth, HexagonsHeight) / 2f;
 
-        for (int x = 0; x < Width; x++)
+        for (int x = 0; x < HexagonsWidth; x++)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < HexagonsHeight; y++)
             {
                 Vector2I offset = new Vector2I(x, y);
                 Vector2I axial = HexUtils.OffsetToAxial(offset);
@@ -116,11 +116,11 @@ public partial class MapGenerator : Node
 
             if (offset.Y == 0)
                 north.Add(offset);
-            if (offset.Y == Height - 1)
+            if (offset.Y == HexagonsHeight - 1)
                 south.Add(offset);
             if (offset.X == 0)
                 west.Add(offset);
-            if (offset.X == Width - 1)
+            if (offset.X == HexagonsWidth - 1)
                 east.Add(offset);
         }
 
@@ -158,10 +158,10 @@ public partial class MapGenerator : Node
 
                 bool inQuadrant = location.Hint switch
                 {
-                    DirectionHint.NorthWest => offset.X < Width / 2 && offset.Y < Height / 2,
-                    DirectionHint.NorthEast => offset.X >= Width / 2 && offset.Y < Height / 2,
-                    DirectionHint.SouthWest => offset.X < Width / 2 && offset.Y >= Height / 2,
-                    DirectionHint.SouthEast => offset.X >= Width / 2 && offset.Y >= Height / 2,
+                    DirectionHint.NorthWest => offset.X < HexagonsWidth / 2 && offset.Y < HexagonsHeight / 2,
+                    DirectionHint.NorthEast => offset.X >= HexagonsWidth / 2 && offset.Y < HexagonsHeight / 2,
+                    DirectionHint.SouthWest => offset.X < HexagonsWidth / 2 && offset.Y >= HexagonsHeight / 2,
+                    DirectionHint.SouthEast => offset.X >= HexagonsWidth / 2 && offset.Y >= HexagonsHeight / 2,
                     _ => false
                 };
 
