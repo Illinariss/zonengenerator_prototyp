@@ -20,6 +20,11 @@ public partial class MapRoot : Node2D
     Dictionary<Vector2I, string> transitions = new();
     public IReadOnlyDictionary<Vector2I, string> Transitions => transitions;
 
+    readonly HashSet<Vector2I> visitedTiles = new();
+    float distanceTravelledKm = 0f;
+    Vector2I? lastVisitedTile = null;
+    public float DistanceTravelledKm => distanceTravelledKm;
+
     public event Action<Vector2I>? OnTileEntered;
     public event Action<string>? OnTransitionEntered;
     public event Action<Vector2I>? OnTileRightClicked;
@@ -32,6 +37,10 @@ public partial class MapRoot : Node2D
         overlay = GetNode<TileMapLayer>("%TileMap_Overlay");
 
         OnTransitionEntered += destination => GD.Print($"Load map: {destination}");
+
+        visitedTiles.Clear();
+        distanceTravelledKm = 0f;
+        lastVisitedTile = null;
 
         GenerateTerrain();
 
@@ -132,6 +141,10 @@ public partial class MapRoot : Node2D
         logic.Clear();
         fog.Clear();
         overlay.Clear();
+
+        visitedTiles.Clear();
+        distanceTravelledKm = 0f;
+        lastVisitedTile = null;
 
         float mapRatio = (float)width / Mathf.Max(1, height);
         float worldRatio = WorldWidthKm / Mathf.Max(0.0001f, WorldHeightKm);
@@ -249,6 +262,15 @@ public partial class MapRoot : Node2D
 
     public void NotifyTileEntered(Vector2I tile)
     {
+        if (lastVisitedTile != null)
+        {
+            var delta = tile - lastVisitedTile.Value;
+            Vector2 diffKm = new Vector2(delta.X * KmPerHexX, delta.Y * KmPerHexY);
+            distanceTravelledKm += diffKm.Length();
+        }
+        visitedTiles.Add(tile);
+        lastVisitedTile = tile;
+
         OnTileEntered?.Invoke(tile);
         if (transitions.TryGetValue(tile, out var destination))
         {
