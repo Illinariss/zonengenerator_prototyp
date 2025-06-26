@@ -51,12 +51,10 @@ theme_override_constants/margin_bottom = 50
 
 [node name="MapContainer" type="SubViewportContainer" parent="PanelContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
 
 [node name="MapViewport" type="SubViewport" parent="PanelContainer/MarginContainer/MapContainer"]
+handle_input_locally = false
+render_target_update_mode = 4
 
 [node name="RecenterButton" type="Button" parent="."]
 visible = false
@@ -68,6 +66,7 @@ offset_left = -110.0
 offset_top = 10.0
 offset_right = -10.0
 offset_bottom = 40.0
+grow_horizontal = 0
 text = "Recenter"
 
 [connection signal="pressed" from="GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
