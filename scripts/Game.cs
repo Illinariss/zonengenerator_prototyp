@@ -83,6 +83,10 @@ public partial class Game : Control
         MapContainerNode.AddChild(map);
         map.Visible = true;
         map.Scale = Vector2.One;
+
+        // Example event subscriptions
+        map.OnLocationDiscovered += info =>
+            GD.Print($"Location discovered: {info.Name}");
         var cam = map.GetNodeOrNull<MapCameraController>("Camera2D");
         if (cam != null)
         {
