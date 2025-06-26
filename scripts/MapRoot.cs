@@ -29,9 +29,25 @@ public partial class MapRoot : Node2D
     Vector2I? lastVisitedTile = null;
     public float DistanceTravelledKm => distanceTravelledKm;
 
+    /// <summary>
+    /// Fired whenever the character steps onto a new tile.
+    /// </summary>
     public event Action<Vector2I>? OnTileEntered;
+
+    /// <summary>
+    /// Fired when a transition tile is entered. The string parameter contains
+    /// the destination map name.
+    /// </summary>
     public event Action<string>? OnTransitionEntered;
+
+    /// <summary>
+    /// Fired when the user right-clicks a tile on the map.
+    /// </summary>
     public event Action<Vector2I>? OnTileRightClicked;
+
+    /// <summary>
+    /// Fired the first time a location becomes visible to the player.
+    /// </summary>
     public event Action<LocationInfo>? OnLocationDiscovered;
 
     public override void _Ready()
