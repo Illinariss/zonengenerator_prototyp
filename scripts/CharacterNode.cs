@@ -9,10 +9,6 @@ public partial class CharacterNode : Node2D
     [Export] public Texture2D CharacterImage;
     [Export] public int SightRadius = 3;
     private Sprite2D _sprite;
-    private bool _isHovered = false;
-    private bool _isCurrentFighter = false;    
-   
-    private ShaderMaterial _shadermaterial;
     private MapRoot? _mapRoot;
     private Vector2I _mapCoords = Vector2I.Zero;
 
@@ -42,12 +38,10 @@ public partial class CharacterNode : Node2D
 
     private void _on_character_body_2d_mouse_entered()
     {
-        _isHovered = true;
     }
 
     private void _on_character_body_2d_mouse_exited()
     {
-        _isHovered = false;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -104,11 +98,6 @@ public partial class CharacterNode : Node2D
         }
     }
 
-    public void SetCurrentFighter(bool value)
-    {
-        _isCurrentFighter = value;
-    } 
-    
     public static CharacterNode Create()
     {
         var scene = GD.Load<PackedScene>("res://scenes/CharacterNode.tscn");

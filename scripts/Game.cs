@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using Godot;
 
 public partial class Game : Control
-{    
-    
-    private Control previousContent;
+{
 
     [Export] public Control MapContainerNode { get; set; }
 
