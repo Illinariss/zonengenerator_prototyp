@@ -50,7 +50,3 @@ AI agents.
 This project is released under the MIT License. See `LICENSE.md` for the full
 text.
 
-## Contributing
-
-Contributions are welcome! Feel free to open issues or pull requests with
-improvements or bug fixes.
