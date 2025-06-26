@@ -90,19 +90,26 @@ public partial class MapCameraController : Camera2D
         if (Map == null)
             return;
 
-        Vector2 viewportSize = GetViewportRect().Size;
+        Rect2 viewportRect = GetViewportRect();
+        Vector2 viewportSize = viewportRect.Size;
         Vector2 mousePos = GetViewport().GetMousePosition();
         Vector2 dir = Vector2.Zero;
 
-        if (mousePos.X < ScrollBorder)
-            dir.X -= 1;
-        else if (mousePos.X > viewportSize.X - ScrollBorder)
-            dir.X += 1;
+        bool inside = viewportRect.HasPoint(mousePos);
+        bool mouseVisible = Input.MouseMode == Input.MouseModeEnum.Visible;
 
-        if (mousePos.Y < ScrollBorder)
-            dir.Y -= 1;
-        else if (mousePos.Y > viewportSize.Y - ScrollBorder)
-            dir.Y += 1;
+        if (inside && mouseVisible)
+        {
+            if (mousePos.X < ScrollBorder)
+                dir.X -= 1;
+            else if (mousePos.X > viewportSize.X - ScrollBorder)
+                dir.X += 1;
+
+            if (mousePos.Y < ScrollBorder)
+                dir.Y -= 1;
+            else if (mousePos.Y > viewportSize.Y - ScrollBorder)
+                dir.Y += 1;
+        }
 
         _timeSinceManualScroll += (float)delta;
         if (dir != Vector2.Zero)
@@ -120,8 +127,8 @@ public partial class MapCameraController : Camera2D
         if (_character != null && _recenterButton != null)
         {
             Rect2 visible = new Rect2(GlobalPosition - viewportSize / 2, viewportSize);
-            bool inside = visible.HasPoint(_character.GlobalPosition);
-            if (inside)
+            bool charInside = visible.HasPoint(_character.GlobalPosition);
+            if (charInside)
                 _recenterButton.Hide();
             else
                 _recenterButton.Show();
