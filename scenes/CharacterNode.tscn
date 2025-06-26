@@ -10,7 +10,7 @@ radius = 63.0
 height = 250.0
 
 [node name="CharacterNode" type="Node2D"]
-scale = Vector2(0.6, 0.6)
+scale = Vector2(0.3, 0.3)
 script = ExtResource("1_0pxp8")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
@@ -21,7 +21,7 @@ motion_mode = 1
 [node name="CharacterTexture" type="Sprite2D" parent="CharacterBody2D"]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_c2o0f")
-position = Vector2(7.62939e-06, 0)
+position = Vector2(-6.66667, -146.667)
 scale = Vector2(0.184, 0.19)
 texture = ExtResource("2_3hcxy")
 
