@@ -14,6 +14,7 @@ public partial class Enums : Node
         Unknown,
         Safe,
         Dangerous,
-        Unpassable
+        Unpassable,
+        Water
     }
 }
