@@ -126,6 +126,26 @@ public partial class MapRoot : Node2D
     }
 
     /// <summary>
+    /// Converts a viewport position to map tile coordinates if inside the view
+    /// port.
+    /// </summary>
+    /// <param name="screenPos">Mouse position in viewport coordinates.</param>
+    /// <param name="tile">Resulting tile coordinates when inside the viewport.</param>
+    /// <returns>True if the position lies within the viewport.</returns>
+    bool TryGetTileFromScreen(Vector2 screenPos, out Vector2I tile)
+    {
+        tile = Vector2I.Zero;
+        var viewport = GetViewport();
+        var rect = new Rect2(Vector2.Zero, viewport.GetVisibleRect().Size);
+        if (!rect.HasPoint(screenPos))
+            return false;
+
+        Vector2 local = overlay.GetLocalMousePosition();
+        tile = overlay.LocalToMap(local);
+        return true;
+    }
+
+    /// <summary>
     /// Handles mouse interactions such as previewing paths, moving the
     /// character on double-click and notifying about right clicks.
     /// </summary>
@@ -134,7 +154,12 @@ public partial class MapRoot : Node2D
     {
         if (@event is InputEventMouseMotion ev)
         {
-            var tileCoords = overlay.LocalToMap(overlay.ToLocal(ev.GlobalPosition));
+            if (!TryGetTileFromScreen(ev.Position, out var tileCoords))
+            {
+                if (lastTileUnderMouseCoordinates != Vector2I.Zero)
+                    ClearPreview();
+                return;
+            }
 
             if (!usedtiles.Contains(tileCoords))
             {
@@ -170,7 +195,8 @@ public partial class MapRoot : Node2D
         }
         else if (@event is InputEventMouseButton mouse && mouse.Pressed)
         {
-            var tileCoords = overlay.LocalToMap(overlay.ToLocal(mouse.GlobalPosition));
+            if (!TryGetTileFromScreen(mouse.Position, out var tileCoords))
+                return;
 
             if (!usedtiles.Contains(tileCoords))
                 return;
