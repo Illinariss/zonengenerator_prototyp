@@ -21,6 +21,7 @@ public partial class MapRoot : Node2D
     public IReadOnlyDictionary<Vector2I, string> Transitions => transitions;
 
     readonly HashSet<Vector2I> visitedTiles = new();
+    readonly HashSet<Vector2I> discoveredTiles = new();
     float distanceTravelledKm = 0f;
     Vector2I? lastVisitedTile = null;
     public float DistanceTravelledKm => distanceTravelledKm;
@@ -39,6 +40,7 @@ public partial class MapRoot : Node2D
         OnTransitionEntered += destination => GD.Print($"Load map: {destination}");
 
         visitedTiles.Clear();
+        discoveredTiles.Clear();
         distanceTravelledKm = 0f;
         lastVisitedTile = null;
 
@@ -143,6 +145,7 @@ public partial class MapRoot : Node2D
         overlay.Clear();
 
         visitedTiles.Clear();
+        discoveredTiles.Clear();
         distanceTravelledKm = 0f;
         lastVisitedTile = null;
 
@@ -199,11 +202,18 @@ public partial class MapRoot : Node2D
         {
             var axial = HexUtils.OffsetToAxial(tile);
             int distance = HexUtils.Distance(centerAxial, axial);
-            if (visibleSet.Contains(axial))
+            bool visible = visibleSet.Contains(axial);
+
+            if (visible)
             {
+                discoveredTiles.Add(tile);
                 float ratio = (float)distance / Math.Max(1, sightRadius);
                 int index = 4 - Mathf.Clamp(Mathf.FloorToInt(ratio * 4), 0, 4);
                 fog.SetCell(tile, 0, new Vector2I(index, 0));
+            }
+            else if (discoveredTiles.Contains(tile))
+            {
+                fog.SetCell(tile, 0, new Vector2I(4, 0));
             }
             else
             {
@@ -220,6 +230,11 @@ public partial class MapRoot : Node2D
     public Vector2I LocalToMap(Vector2 position)
     {
         return visual.LocalToMap(position);
+    }
+
+    public bool IsTileDiscovered(Vector2I tile)
+    {
+        return discoveredTiles.Contains(tile);
     }
 
     public List<Vector2I> ComputePath(Vector2I startOffset, Vector2I targetOffset)
