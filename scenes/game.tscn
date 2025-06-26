@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_uwrxv")
-MapContainerNode = NodePath("PanelContainer/MarginContainer/MapContainer")
+MapContainerNode = NodePath("PanelContainer/MarginContainer/MapContainer/MapViewport")
 
 [node name="GridContainer" type="GridContainer" parent="."]
 layout_mode = 2
@@ -49,12 +49,14 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="MapContainer" type="MarginContainer" parent="PanelContainer/MarginContainer"]
+[node name="MapContainer" type="SubViewportContainer" parent="PanelContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
+
+[node name="MapViewport" type="SubViewport" parent="PanelContainer/MarginContainer/MapContainer"]
 
 [node name="RecenterButton" type="Button" parent="."]
 visible = false
