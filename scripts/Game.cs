@@ -8,7 +8,7 @@ public partial class Game : Control
 
     [Export] public Control MapContainerNode { get; set; }
 
-    private static MapRoot CreateMapp(int width, int height, IList<LocationInfo> locations, int seed)
+    private static MapRoot CreateMap(int width, int height, IList<LocationInfo> locations, int seed)
     {
         var mapScene = GD.Load<PackedScene>("res://scenes/map_root.tscn");
         var mapRoot = mapScene.Instantiate<MapRoot>();
@@ -37,7 +37,7 @@ public partial class Game : Control
             new LocationInfo("Cave", DirectionHint.SouthEast)
         };
 
-        return CreateMapp(15, 15, locations, 1);
+        return CreateMap(15, 15, locations, 1);
     }
 
     public MapRoot CreateMediumMap()
@@ -49,7 +49,7 @@ public partial class Game : Control
             new LocationInfo("Farm", DirectionHint.SouthWest)
         };
 
-        return CreateMapp(25, 20, locations, 2);
+        return CreateMap(25, 20, locations, 2);
     }
 
     public MapRoot CreateLargeMap()
@@ -63,7 +63,7 @@ public partial class Game : Control
             new LocationInfo("Temple", DirectionHint.NorthEast)
         };
 
-        return CreateMapp(40, 30, locations, 3);
+        return CreateMap(40, 30, locations, 3);
     }
 
     public override void _Ready()
