@@ -8,9 +8,12 @@ public partial class MapCameraController : Camera2D
     [Export] public MapRoot? Map;
     [Export] public NodePath CharacterPath = "";
     [Export] public NodePath RecenterButtonPath = "";
+    [Export] public float AutoFollowDelay = 1f;
+    [Export] public float AutoFollowSpeed = 200f;
 
     private CharacterNode? _character;
     private Button? _recenterButton;
+    private float _timeSinceManualScroll = 0f;
 
     public void SetCharacter(CharacterNode character)
     {
@@ -69,9 +72,16 @@ public partial class MapCameraController : Camera2D
         else if (mousePos.Y > viewportSize.Y - ScrollBorder)
             dir.Y += 1;
 
+        _timeSinceManualScroll += (float)delta;
         if (dir != Vector2.Zero)
         {
             Position += dir.Normalized() * ScrollSpeed * (float)delta;
+            ClampToMap(viewportSize);
+            _timeSinceManualScroll = 0f;
+        }
+        else if (_character != null && _timeSinceManualScroll > AutoFollowDelay)
+        {
+            Position = Position.MoveToward(_character.GlobalPosition, AutoFollowSpeed * (float)delta);
             ClampToMap(viewportSize);
         }
 
