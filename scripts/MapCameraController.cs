@@ -28,6 +28,12 @@ public partial class MapCameraController : Camera2D
     /// <summary>Speed of the automatic follow movement.</summary>
     [Export] public float AutoFollowSpeed = 200f;
 
+    /// <summary>Minimum allowed zoom factor.</summary>
+    [Export] public float MinZoom = 0.5f;
+
+    /// <summary>Maximum allowed zoom factor.</summary>
+    [Export] public float MaxZoom = 2f;
+
     private CharacterNode? _character;
     private Button? _recenterButton;
     private float _timeSinceManualScroll = 0f;
@@ -50,7 +56,7 @@ public partial class MapCameraController : Camera2D
         if (_character == null)
             return;
         Position = _character.GlobalPosition;
-        ClampToMap(GetViewportRect().Size);
+        ClampToMap(GetViewportRect().Size / Zoom);
     }
 
     /// <summary>
@@ -91,7 +97,8 @@ public partial class MapCameraController : Camera2D
             return;
 
         Rect2 viewportRect = GetViewportRect();
-        Vector2 viewportSize = viewportRect.Size;
+        Vector2 viewportSize = viewportRect.Size / Zoom;
+        Vector2 screenSize = viewportRect.Size;
         Vector2 mousePos = GetViewport().GetMousePosition();
         Vector2 dir = Vector2.Zero;
 
@@ -102,12 +109,12 @@ public partial class MapCameraController : Camera2D
         {
             if (mousePos.X < ScrollBorder)
                 dir.X -= 1;
-            else if (mousePos.X > viewportSize.X - ScrollBorder)
+            else if (mousePos.X > screenSize.X - ScrollBorder)
                 dir.X += 1;
 
             if (mousePos.Y < ScrollBorder)
                 dir.Y -= 1;
-            else if (mousePos.Y > viewportSize.Y - ScrollBorder)
+            else if (mousePos.Y > screenSize.Y - ScrollBorder)
                 dir.Y += 1;
         }
 
@@ -135,12 +142,34 @@ public partial class MapCameraController : Camera2D
         }
     }
 
+    /// <summary>
+    /// Handles zoom input via the mouse wheel.
+    /// </summary>
+    /// <param name="@event">Input event from Godot.</param>
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouse && mouse.Pressed)
+        {
+            if (mouse.ButtonIndex == MouseButton.WheelUp)
+                AdjustZoom(-0.1f);
+            else if (mouse.ButtonIndex == MouseButton.WheelDown)
+                AdjustZoom(0.1f);
+        }
+    }
+
+    private void AdjustZoom(float delta)
+    {
+        float target = Mathf.Clamp(Zoom.X + delta, MinZoom, MaxZoom);
+        Zoom = new Vector2(target, target);
+        ClampToMap(GetViewportRect().Size / Zoom);
+    }
+
     private void RecenterOnCharacter()
     {
         if (_character == null)
             return;
         Position = _character.GlobalPosition;
-        ClampToMap(GetViewportRect().Size);
+        ClampToMap(GetViewportRect().Size / Zoom);
     }
 
     private void ClampToMap(Vector2 viewportSize)
