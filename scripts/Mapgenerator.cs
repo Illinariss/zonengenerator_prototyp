@@ -65,7 +65,8 @@ public partial class MapGenerator : Node
 
     /// <summary>
     /// Generates a dictionary of axial coordinates mapped to zone types for the
-    /// map using the configured seed.
+    /// map using the configured seed. Dangerous tiles are placed in small
+    /// clusters to create contiguous hazardous areas.
     /// </summary>
     /// <returns>Dictionary of axial coordinates to zone types.</returns>
     public Dictionary<Vector2I, Enums.ZoneType> Generate()
@@ -83,12 +84,59 @@ public partial class MapGenerator : Node
             Enums.ZoneType type = roll switch
             {
                 < 0.6f => Enums.ZoneType.Safe,
-                < 0.75f => Enums.ZoneType.Dangerous,
-                < 0.9f => Enums.ZoneType.Water,
-                _ => Enums.ZoneType.Unpassable,
+                < 0.75f => Enums.ZoneType.Water,
+                < 0.9f => Enums.ZoneType.Unpassable,
+                _ => Enums.ZoneType.Safe,
             };
 
             mapData[axial] = type;
+        }
+
+        int desiredDanger = (int)(shape.Count * 0.15f);
+        List<Vector2I> safeTiles = new List<Vector2I>();
+        foreach (var kvp in mapData)
+        {
+            if (kvp.Value == Enums.ZoneType.Safe)
+                safeTiles.Add(kvp.Key);
+        }
+
+        int clusterCount = Math.Max(1, desiredDanger / 8);
+        for (int i = 0; i < clusterCount && safeTiles.Count > 0 && desiredDanger > 0; i++)
+        {
+            int index = rng.RandiRange(0, safeTiles.Count - 1);
+            Vector2I start = safeTiles[index];
+            safeTiles.RemoveAt(index);
+
+            int clusterSize = Math.Min(desiredDanger, rng.RandiRange(4, 10));
+            Queue<Vector2I> queue = new Queue<Vector2I>();
+            queue.Enqueue(start);
+
+            while (queue.Count > 0 && clusterSize > 0)
+            {
+                Vector2I tile = queue.Dequeue();
+                if (!mapData.ContainsKey(tile) || mapData[tile] != Enums.ZoneType.Safe)
+                    continue;
+
+                mapData[tile] = Enums.ZoneType.Dangerous;
+                desiredDanger--;
+                clusterSize--;
+
+                foreach (var neighbor in HexUtils.GetNeighbors(tile))
+                {
+                    if (mapData.TryGetValue(neighbor, out var zone) && zone == Enums.ZoneType.Safe)
+                        queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        while (desiredDanger > 0 && safeTiles.Count > 0)
+        {
+            int index = rng.RandiRange(0, safeTiles.Count - 1);
+            Vector2I tile = safeTiles[index];
+            safeTiles.RemoveAt(index);
+
+            mapData[tile] = Enums.ZoneType.Dangerous;
+            desiredDanger--;
         }
 
         PlaceTransitions(mapData);
