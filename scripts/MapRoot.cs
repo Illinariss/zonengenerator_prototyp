@@ -3,17 +3,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Root node for a generated hex map. Handles tile maps, fog of war and
+/// exposes events for player interactions.
+/// </summary>
 public partial class MapRoot : Node2D
 {
-    [Export] public int width = 100;
-    [Export] public int height = 60;
-    [Export] public float WorldWidthKm = 100f;
-    [Export] public float WorldHeightKm = 60f;
-    [Export] public MapGenerator? Generator;
+    /// <summary>Number of horizontal tiles.</summary>
+    [Export]
+    public int width = 100;
+
+    /// <summary>Number of vertical tiles.</summary>
+    [Export]
+    public int height = 60;
+
+    /// <summary>Width of the world in kilometres.</summary>
+    [Export]
+    public float WorldWidthKm = 100f;
+
+    /// <summary>Height of the world in kilometres.</summary>
+    [Export]
+    public float WorldHeightKm = 60f;
+
+    /// <summary>Generator used to create terrain and transitions.</summary>
+    [Export]
+    public MapGenerator? Generator;
+
+    /// <summary>List of locations that can appear on the map.</summary>
     public IList<LocationInfo>? Locations { get; set; }
 
+    /// <summary>World distance represented by a single tile horizontally.</summary>
     public float KmPerHexX => WorldWidthKm / width;
+
+    /// <summary>World distance represented by a single tile vertically.</summary>
     public float KmPerHexY => WorldHeightKm / height;
+
+    /// <summary>Area in square kilometres represented by a tile.</summary>
     public float KmPerHexArea => KmPerHexX * KmPerHexY;
 
     TileMapLayer visual, logic, fog, overlay;
@@ -21,12 +46,16 @@ public partial class MapRoot : Node2D
     Dictionary<Vector2I, string> transitions = new();
     Dictionary<Vector2I, LocationInfo> locationLookup = new();
     HashSet<Vector2I> discoveredLocationTiles = new();
+    /// <summary>
+    /// Tiles that lead to other maps mapped to their destination identifier.
+    /// </summary>
     public IReadOnlyDictionary<Vector2I, string> Transitions => transitions;
 
     readonly HashSet<Vector2I> visitedTiles = new();
     readonly HashSet<Vector2I> discoveredTiles = new();
     float distanceTravelledKm = 0f;
     Vector2I? lastVisitedTile = null;
+    /// <summary>Total distance travelled by the character in kilometres.</summary>
     public float DistanceTravelledKm => distanceTravelledKm;
 
     /// <summary>
@@ -50,6 +79,10 @@ public partial class MapRoot : Node2D
     /// </summary>
     public event Action<LocationInfo>? OnLocationDiscovered;
 
+    /// <summary>
+    /// Initializes tilemap references and spawns the player character when the
+    /// node enters the scene tree.
+    /// </summary>
     public override void _Ready()
     {
         visual = GetNode<TileMapLayer>("%TileMap_Visual");
@@ -92,6 +125,11 @@ public partial class MapRoot : Node2D
         lastTileUnderMouseCoordinates = Vector2I.Zero;
     }
 
+    /// <summary>
+    /// Handles mouse interactions such as previewing paths, moving the
+    /// character on double-click and notifying about right clicks.
+    /// </summary>
+    /// <param name="@event">Input event from Godot.</param>
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event is InputEventMouseMotion ev)
@@ -158,6 +196,10 @@ public partial class MapRoot : Node2D
 
     List<Vector2I> usedtiles = new List<Vector2I>();
 
+    /// <summary>
+    /// Generates the hex grid using the configured <see cref="Generator"/> and
+    /// populates tile maps, transitions and locations.
+    /// </summary>
     public void GenerateTerrain()
     {
         usedtiles.Clear();
@@ -223,6 +265,11 @@ public partial class MapRoot : Node2D
         }
     }
 
+    /// <summary>
+    /// Updates the fog of war around the given player position.
+    /// </summary>
+    /// <param name="playerPosition">Player tile coordinates.</param>
+    /// <param name="sightRadius">Number of tiles the player can see.</param>
     public void UpdateFog(Vector2I playerPosition, int sightRadius)
     {
         var centerAxial = HexUtils.OffsetToAxial(playerPosition);
@@ -254,21 +301,37 @@ public partial class MapRoot : Node2D
         }
     }
 
+    /// <summary>
+    /// Returns the world position of the center of the specified tile.
+    /// </summary>
+    /// <param name="tile">Tile coordinates.</param>
     public Vector2 GetTileCenter(Vector2I tile)
     {
         return visual.MapToLocal(tile) + visual.TileSet.TileSize / 2;
     }
 
+    /// <summary>
+    /// Converts a local position to offset tile coordinates using the visual tile map.
+    /// </summary>
     public Vector2I LocalToMap(Vector2 position)
     {
         return visual.LocalToMap(position);
     }
 
+    /// <summary>
+    /// Determines whether the specified tile has been discovered by the player.
+    /// </summary>
     public bool IsTileDiscovered(Vector2I tile)
     {
         return discoveredTiles.Contains(tile);
     }
 
+    /// <summary>
+    /// Computes a path in axial coordinates between two offset tiles using BFS.
+    /// </summary>
+    /// <param name="startOffset">Start tile in offset space.</param>
+    /// <param name="targetOffset">Target tile in offset space.</param>
+    /// <returns>List of axial coordinates representing the path.</returns>
     public List<Vector2I> ComputePath(Vector2I startOffset, Vector2I targetOffset)
     {
         var startAxial = HexUtils.OffsetToAxial(startOffset);
@@ -279,6 +342,10 @@ public partial class MapRoot : Node2D
         });
     }
 
+    /// <summary>
+    /// Draws the given path on the overlay tile map.
+    /// </summary>
+    /// <param name="axialPath">Path in axial coordinates.</param>
     public void DrawPath(List<Vector2I> axialPath)
     {
         foreach (var tile in usedtiles)
@@ -299,6 +366,11 @@ public partial class MapRoot : Node2D
         }
     }
 
+    /// <summary>
+    /// Animates the character along the supplied axial path.
+    /// </summary>
+    /// <param name="character">Character to move.</param>
+    /// <param name="axialPath">Path in axial coordinates.</param>
     public async System.Threading.Tasks.Task AnimateCharacterAlongPath(CharacterNode character, List<Vector2I> axialPath)
     {
         foreach (var axial in axialPath)
@@ -313,6 +385,10 @@ public partial class MapRoot : Node2D
         }
     }
 
+    /// <summary>
+    /// Updates internal state when a tile is entered and fires events.
+    /// </summary>
+    /// <param name="tile">Tile coordinates.</param>
     public void NotifyTileEntered(Vector2I tile)
     {
         if (lastVisitedTile != null)
