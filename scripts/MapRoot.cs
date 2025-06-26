@@ -271,10 +271,24 @@ public partial class MapRoot : Node2D
             axialCoords = temp;
         }
 
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+
         foreach (var axial in axialCoords)
         {
             var coords = HexUtils.AxialToOffset(axial);
-            visual.SetCell(coords, 0, new Vector2I(2, 2));
+            Vector2I visualTile = zoneData[axial] switch
+            {
+                Enums.ZoneType.Unpassable => new Vector2I(1, 0),
+                Enums.ZoneType.Dangerous => new Vector2I(1, 2),
+                Enums.ZoneType.Safe =>
+                    rng.RandiRange(0, 1) == 0
+                        ? new Vector2I(2, 2)
+                        : new Vector2I(3, 2),
+                Enums.ZoneType.Water => new Vector2I(0, 2),
+                _ => new Vector2I(2, 2)
+            };
+
+            visual.SetCell(coords, 0, visualTile);
             overlay.SetCell(coords, 0, new Vector2I(0, 0));
             fog.SetCell(coords, 0, new Vector2I(0, 0));
             logic.SetCell(coords, 0, new Vector2I((int)zoneData[axial], 0));
