@@ -85,6 +85,7 @@ public partial class CharacterNode : Node2D
 
     public void MoveTo(Vector2I mapCoords)
     {
+        _mapCoords = mapCoords;
         if (_mapRoot != null)
         {
             Position = _mapRoot.GetTileCenter(mapCoords);
