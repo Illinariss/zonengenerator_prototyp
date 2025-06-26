@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class MapRoot : Node2D
 {
@@ -32,6 +33,22 @@ public partial class MapRoot : Node2D
         OnTransitionEntered += destination => GD.Print($"Load map: {destination}");
 
         GenerateTerrain();
+
+        if (transitions.Count > 0)
+        {
+            var entryTile = transitions.Keys.First();
+            var character = CharacterNode.Create();
+            character.Name = "CharacterNode";
+            AddChild(character);
+            character.CallDeferred(nameof(CharacterNode.MoveTo), entryTile);
+
+            var cam = GetNodeOrNull<MapCameraController>("Camera2D");
+            if (cam != null)
+            {
+                cam.SetCharacter(character);
+                cam.CallDeferred(nameof(MapCameraController.CenterOnCharacter));
+            }
+        }
     }
 
     Vector2I lastTileUnderMouseCoordinates;
