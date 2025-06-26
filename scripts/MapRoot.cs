@@ -10,6 +10,7 @@ public partial class MapRoot : Node2D
     [Export] public float WorldWidthKm = 100f;
     [Export] public float WorldHeightKm = 60f;
     [Export] public MapGenerator? Generator;
+    public IList<LocationInfo>? Locations { get; set; }
 
     public float KmPerHexX => WorldWidthKm / width;
     public float KmPerHexY => WorldHeightKm / height;
@@ -18,6 +19,8 @@ public partial class MapRoot : Node2D
     TileMapLayer visual, logic, fog, overlay;
     Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
     Dictionary<Vector2I, string> transitions = new();
+    Dictionary<Vector2I, LocationInfo> locationLookup = new();
+    HashSet<Vector2I> discoveredLocationTiles = new();
     public IReadOnlyDictionary<Vector2I, string> Transitions => transitions;
 
     readonly HashSet<Vector2I> visitedTiles = new();
@@ -29,6 +32,7 @@ public partial class MapRoot : Node2D
     public event Action<Vector2I>? OnTileEntered;
     public event Action<string>? OnTransitionEntered;
     public event Action<Vector2I>? OnTileRightClicked;
+    public event Action<LocationInfo>? OnLocationDiscovered;
 
     public override void _Ready()
     {
@@ -41,6 +45,7 @@ public partial class MapRoot : Node2D
 
         visitedTiles.Clear();
         discoveredTiles.Clear();
+        discoveredLocationTiles.Clear();
         distanceTravelledKm = 0f;
         lastVisitedTile = null;
 
@@ -190,6 +195,15 @@ public partial class MapRoot : Node2D
             logic.SetCell(coords, 0, new Vector2I((int)zoneData[axial], 0));
             usedtiles.Add(coords);
         }
+
+        locationLookup.Clear();
+        if (Locations != null)
+        {
+            foreach (var loc in Locations)
+            {
+                locationLookup[loc.Coordinates] = loc;
+            }
+        }
     }
 
     public void UpdateFog(Vector2I playerPosition, int sightRadius)
@@ -210,6 +224,7 @@ public partial class MapRoot : Node2D
                 float ratio = (float)distance / Math.Max(1, sightRadius);
                 int index = 4 - Mathf.Clamp(Mathf.FloorToInt(ratio * 4), 0, 4);
                 fog.SetCell(tile, 0, new Vector2I(index, 0));
+                CheckLocation(axial);
             }
             else if (discoveredTiles.Contains(tile))
             {
@@ -254,6 +269,12 @@ public partial class MapRoot : Node2D
             overlay.SetCell(tile, 0, new Vector2I(0, 0));
         }
 
+        foreach (var loc in discoveredLocationTiles)
+        {
+            var offset = HexUtils.AxialToOffset(loc);
+            overlay.SetCell(offset, 0, new Vector2I(3, 0));
+        }
+
         foreach (var axial in axialPath)
         {
             var offset = HexUtils.AxialToOffset(axial);
@@ -290,6 +311,28 @@ public partial class MapRoot : Node2D
         if (transitions.TryGetValue(tile, out var destination))
         {
             OnTransitionEntered?.Invoke(destination);
+        }
+
+        var axial = HexUtils.OffsetToAxial(tile);
+        CheckLocation(axial);
+    }
+
+    void CheckLocation(Vector2I axial)
+    {
+        if (locationLookup.TryGetValue(axial, out var info))
+        {
+            if (!discoveredLocationTiles.Contains(axial))
+            {
+                discoveredLocationTiles.Add(axial);
+                var offset = HexUtils.AxialToOffset(axial);
+                overlay.SetCell(offset, 0, new Vector2I(3, 0));
+                OnLocationDiscovered?.Invoke(info);
+            }
+            else
+            {
+                var offset = HexUtils.AxialToOffset(axial);
+                overlay.SetCell(offset, 0, new Vector2I(3, 0));
+            }
         }
     }
 
