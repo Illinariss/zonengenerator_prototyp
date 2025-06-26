@@ -11,7 +11,7 @@ public partial class Game : Control
     /// Node that will hold the currently displayed map scene.
     /// </summary>
     [Export]
-    public Control MapContainerNode { get; set; }
+    public Node MapContainerNode { get; set; }
 
     private static MapRoot CreateMap(int width, int height, IList<LocationInfo> locations, int seed)
     {
