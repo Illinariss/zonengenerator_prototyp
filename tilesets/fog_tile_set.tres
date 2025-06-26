@@ -7,6 +7,10 @@
 shader = ExtResource("2_shader")
 shader_parameter/alpha = 1.0
 
+[sub_resource type="ShaderMaterial" id="FogMaterial_4"]
+shader = ExtResource("2_shader")
+shader_parameter/alpha = 0.0
+
 [sub_resource type="ShaderMaterial" id="FogMaterial_1"]
 shader = ExtResource("2_shader")
 shader_parameter/alpha = 0.75
@@ -19,10 +23,6 @@ shader_parameter/alpha = 0.5
 shader = ExtResource("2_shader")
 shader_parameter/alpha = 0.25
 
-[sub_resource type="ShaderMaterial" id="FogMaterial_4"]
-shader = ExtResource("2_shader")
-shader_parameter/alpha = 0.0
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0"]
 texture = ExtResource("2_y4xh8")
 texture_region_size = Vector2i(128, 128)
@@ -34,18 +34,15 @@ texture_region_size = Vector2i(128, 128)
 2:0/0/material = SubResource("FogMaterial_2")
 3:0/0 = 0
 3:0/0/material = SubResource("FogMaterial_3")
-4:0/0 = 0
-4:0/0/material = SubResource("FogMaterial_4")
 0:1/0 = 0
+0:1/0/material = SubResource("FogMaterial_4")
 1:1/0 = 0
 2:1/0 = 0
 3:1/0 = 0
-4:1/0 = 0
 0:2/0 = 0
 1:2/0 = 0
 2:2/0 = 0
 3:2/0 = 0
-4:2/0 = 0
 
 [resource]
 tile_shape = 3
