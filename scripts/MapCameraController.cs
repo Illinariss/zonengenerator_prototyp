@@ -12,6 +12,20 @@ public partial class MapCameraController : Camera2D
     private CharacterNode? _character;
     private Button? _recenterButton;
 
+    public void SetCharacter(CharacterNode character)
+    {
+        _character = character;
+        CharacterPath = GetPathTo(character);
+    }
+
+    public void CenterOnCharacter()
+    {
+        if (_character == null)
+            return;
+        Position = _character.GlobalPosition;
+        ClampToMap(GetViewportRect().Size);
+    }
+
     public override void _Ready()
     {
         if (Map == null)
