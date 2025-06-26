@@ -15,7 +15,7 @@
 - GDShader mit vollständiger erklärung was?,wie?,warum?
 
 ## PR‑Format
-- "[Auto] <Kurzbeschreibung>"
+- "[ChatGPT] <Kurzbeschreibung>"
 - Abschnitt "Tests bestanden: ✅"
 
 ## Umgebungsvoraussetzungen
