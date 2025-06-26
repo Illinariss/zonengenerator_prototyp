@@ -7,7 +7,7 @@
 ## Build & Test
 - Dotnet‑Build: `dotnet build`
 - Tests: `dotnet test --logger:trx`
-- nutze `--headless` für Godot 
+- Godot-build: `./Godot_v4.4.1-stable_mono_linux.x86_64 --headless --path . --main-scene scenes/game.tscn --quit -v`
 
 ## Code‑Stil
 - C#: StyleCop-Anweisungen, Benennungskonventionen, Vollständig kommentiert
