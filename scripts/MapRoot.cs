@@ -6,7 +6,13 @@ public partial class MapRoot : Node2D
 {
     [Export] public int width = 100;
     [Export] public int height = 60;
+    [Export] public float WorldWidthKm = 100f;
+    [Export] public float WorldHeightKm = 60f;
     [Export] public MapGenerator? Generator;
+
+    public float KmPerHexX => WorldWidthKm / width;
+    public float KmPerHexY => WorldHeightKm / height;
+    public float KmPerHexArea => KmPerHexX * KmPerHexY;
 
     TileMapLayer visual, logic, fog, overlay;
     Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
@@ -84,6 +90,12 @@ public partial class MapRoot : Node2D
         logic.Clear();
         fog.Clear();
         overlay.Clear();
+
+        float mapRatio = (float)width / Mathf.Max(1, height);
+        float worldRatio = WorldWidthKm / Mathf.Max(0.0001f, WorldHeightKm);
+        float deviation = Mathf.Abs(mapRatio - worldRatio) / mapRatio;
+        if (deviation > 0.25f)
+            throw new InvalidOperationException("World dimension ratio does not match map aspect ratio");
 
         // Generate terrain here
         zoneData.Clear();
