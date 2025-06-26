@@ -24,6 +24,7 @@ public partial class Game : Control
         generator.PlaceLocations(mapData, locations);
 
         mapRoot.Generator = generator;
+        mapRoot.Locations = locations;
 
         return mapRoot;
     }
