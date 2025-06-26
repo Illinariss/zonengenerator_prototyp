@@ -380,7 +380,9 @@ public partial class MapRoot : Node2D
         var targetAxial = HexUtils.OffsetToAxial(targetOffset);
         return Pathfinder.FindPath(startAxial, targetAxial, ax =>
         {
-            return zoneData.ContainsKey(ax) && zoneData[ax] != Enums.ZoneType.Unpassable;
+            return zoneData.ContainsKey(ax)
+                && zoneData[ax] != Enums.ZoneType.Unpassable
+                && zoneData[ax] != Enums.ZoneType.Water;
         });
     }
 

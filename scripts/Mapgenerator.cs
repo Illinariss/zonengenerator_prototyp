@@ -82,8 +82,9 @@ public partial class MapGenerator : Node
             float roll = rng.Randf();
             Enums.ZoneType type = roll switch
             {
-                < 0.7f => Enums.ZoneType.Safe,
-                < 0.9f => Enums.ZoneType.Dangerous,
+                < 0.6f => Enums.ZoneType.Safe,
+                < 0.75f => Enums.ZoneType.Dangerous,
+                < 0.9f => Enums.ZoneType.Water,
                 _ => Enums.ZoneType.Unpassable,
             };
 
@@ -109,7 +110,7 @@ public partial class MapGenerator : Node
 
         foreach (var kvp in mapData)
         {
-            if (kvp.Value == Enums.ZoneType.Unpassable)
+            if (kvp.Value == Enums.ZoneType.Unpassable || kvp.Value == Enums.ZoneType.Water)
                 continue;
 
             var offset = HexUtils.AxialToOffset(kvp.Key);
@@ -151,7 +152,7 @@ public partial class MapGenerator : Node
 
             foreach (var kvp in mapData)
             {
-                if (kvp.Value == Enums.ZoneType.Unpassable)
+                if (kvp.Value == Enums.ZoneType.Unpassable || kvp.Value == Enums.ZoneType.Water)
                     continue;
 
                 Vector2I offset = HexUtils.AxialToOffset(kvp.Key);
