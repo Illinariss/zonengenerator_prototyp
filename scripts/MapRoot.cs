@@ -22,6 +22,7 @@ public partial class MapRoot : Node2D
 
     public event Action<Vector2I>? OnTileEntered;
     public event Action<string>? OnTransitionEntered;
+    public event Action<Vector2I>? OnTileRightClicked;
 
     public override void _Ready()
     {
@@ -95,6 +96,30 @@ public partial class MapRoot : Node2D
             else
             {
                 ClearPreview();
+            }
+        }
+        else if (@event is InputEventMouseButton mouse && mouse.Pressed)
+        {
+            var tileCoords = overlay.LocalToMap(overlay.ToLocal(mouse.GlobalPosition));
+
+            if (!usedtiles.Contains(tileCoords))
+                return;
+
+            if (mouse.ButtonIndex == MouseButton.Left && mouse.DoubleClick)
+            {
+                var character = GetNodeOrNull<CharacterNode>("CharacterNode");
+                if (character == null)
+                    return;
+
+                var startOffset = visual.LocalToMap(character.Position);
+                var path = ComputePath(startOffset, tileCoords);
+
+                if (path.Count > 0)
+                    _ = AnimateCharacterAlongPath(character, path);
+            }
+            else if (mouse.ButtonIndex == MouseButton.Right)
+            {
+                OnTileRightClicked?.Invoke(tileCoords);
             }
         }
     }
