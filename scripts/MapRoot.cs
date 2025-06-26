@@ -333,7 +333,9 @@ public partial class MapRoot : Node2D
     /// <param name="tile">Tile coordinates.</param>
     public Vector2 GetTileCenter(Vector2I tile)
     {
-        return visual.MapToLocal(tile) + visual.TileSet.TileSize / 2;
+        // MapToLocal() already returns the center for hex maps. Adding half the
+        // tile size would shift the result down by one row.
+        return visual.MapToLocal(tile);
     }
 
     /// <summary>
