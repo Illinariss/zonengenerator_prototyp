@@ -160,6 +160,7 @@ public partial class MapRoot : Node2D
 
     public void GenerateTerrain()
     {
+        usedtiles.Clear();
         visual.Clear();
         logic.Clear();
         fog.Clear();
