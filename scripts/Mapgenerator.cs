@@ -77,6 +77,7 @@ public partial class MapGenerator : Node
         Dictionary<Vector2I, Enums.ZoneType> mapData = new Dictionary<Vector2I, Enums.ZoneType>();
 
         var shape = GenerateShape();
+        shape = ValidateShape(shape);
 
         foreach (var axial in shape)
         {
@@ -139,6 +140,7 @@ public partial class MapGenerator : Node
             desiredDanger--;
         }
 
+        RemoveIsolatedTiles(mapData);
         PlaceTransitions(mapData);
 
         return mapData;
@@ -224,6 +226,75 @@ public partial class MapGenerator : Node
             int index = rng.RandiRange(0, candidates.Count - 1);
             Vector2I chosenAxial = candidates[index];
             location.Coordinates = chosenAxial;
+        }
+    }
+
+    /// <summary>
+    /// Filters generated axial coordinates so that all resulting tiles lie within
+    /// the configured map boundaries.
+    /// </summary>
+    /// <param name="shape">Generated axial coordinates.</param>
+    /// <returns>New list containing only valid coordinates.</returns>
+    private List<Vector2I> ValidateShape(List<Vector2I> shape)
+    {
+        List<Vector2I> valid = new();
+        foreach (var axial in shape)
+        {
+            var offset = HexUtils.AxialToOffset(axial);
+            if (offset.X >= 0 && offset.X < HexagonsWidth && offset.Y >= 0 && offset.Y < HexagonsHeight)
+                valid.Add(axial);
+        }
+
+        return valid;
+    }
+
+    /// <summary>
+    /// Removes passable tiles that cannot be reached because they are fully surrounded
+    /// by unpassable or missing tiles.
+    /// </summary>
+    /// <param name="mapData">Zone dictionary to modify.</param>
+    private void RemoveIsolatedTiles(Dictionary<Vector2I, Enums.ZoneType> mapData)
+    {
+        Vector2I? start = null;
+        foreach (var kvp in mapData)
+        {
+            if (kvp.Value != Enums.ZoneType.Unpassable && kvp.Value != Enums.ZoneType.Water)
+            {
+                start = kvp.Key;
+                break;
+            }
+        }
+
+        if (start == null)
+            return;
+
+        HashSet<Vector2I> reachable = new();
+        Queue<Vector2I> queue = new();
+        queue.Enqueue(start.Value);
+        reachable.Add(start.Value);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var neighbor in HexUtils.GetNeighbors(current))
+            {
+                if (!mapData.TryGetValue(neighbor, out var zone))
+                    continue;
+                if (zone == Enums.ZoneType.Unpassable || zone == Enums.ZoneType.Water)
+                    continue;
+                if (reachable.Add(neighbor))
+                    queue.Enqueue(neighbor);
+            }
+        }
+
+        List<Vector2I> keys = new(mapData.Keys);
+        foreach (var key in keys)
+        {
+            var zone = mapData[key];
+            if (zone == Enums.ZoneType.Unpassable || zone == Enums.ZoneType.Water)
+                continue;
+            if (!reachable.Contains(key))
+                mapData.Remove(key);
         }
     }
 }
