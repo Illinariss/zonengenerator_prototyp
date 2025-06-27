@@ -66,7 +66,11 @@ public partial class MapRoot : Node2D
     /// <summary>Area in square kilometres represented by a tile.</summary>
     public float KmPerHexArea => KmPerHexX * KmPerHexY;
 
-    TileMapLayer visual, logic, fog, overlay;
+    /// <summary>Ring around the map rendered with a nebula shader.</summary>
+    [Export]
+    public int NebulaRingWidth = 10;
+
+    TileMapLayer visual, logic, fog, overlay, nebula;
     Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
     Dictionary<Vector2I, string> transitions = new();
     Dictionary<Vector2I, LocationInfo> locationLookup = new();
@@ -114,6 +118,7 @@ public partial class MapRoot : Node2D
         logic = GetNode<TileMapLayer>("%TileMap_Logic");
         fog = GetNode<TileMapLayer>("%TileMap_Fog");
         overlay = GetNode<TileMapLayer>("%TileMap_Overlay");
+        nebula = GetNode<TileMapLayer>("%TileMap_Nebula");
 
         OnTransitionEntered += destination => GD.Print($"Load map: {destination}");
 
@@ -258,6 +263,7 @@ public partial class MapRoot : Node2D
         logic.Clear();
         fog.Clear();
         overlay.Clear();
+        nebula.Clear();
 
         visitedTiles.Clear();
         discoveredTiles.Clear();
@@ -328,6 +334,8 @@ public partial class MapRoot : Node2D
                 locationLookup[loc.Coordinates] = loc;
             }
         }
+
+        CreateNebulaRing();
     }
 
     /// <summary>
@@ -498,5 +506,22 @@ public partial class MapRoot : Node2D
         }
     }
 
+    /// <summary>
+    /// Creates a surrounding ring of tiles with the nebula shader so that
+    /// camera movement never exposes the default background.
+    /// </summary>
+    private void CreateNebulaRing()
+    {
+        for (int x = -NebulaRingWidth; x < width + NebulaRingWidth; x++)
+        {
+            for (int y = -NebulaRingWidth; y < height + NebulaRingWidth; y++)
+            {
+                if (x >= 0 && y >= 0 && x < width && y < height)
+                    continue;
 
+                nebula.SetCell(new Vector2I(x, y), 0, new Vector2I(0, 0));
+            }
+        }
+    }
 }
+
