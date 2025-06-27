@@ -32,6 +32,31 @@ public partial class MapRoot : Node2D
     /// <summary>List of locations that can appear on the map.</summary>
     public IList<LocationInfo>? Locations { get; set; }
 
+    /// <summary>
+    /// Applies settings from the provided <see cref="ZoneMap"/>.
+    /// </summary>
+    /// <param name="zoneMap">Description of the map to initialize.</param>
+    public void Initialize(ZoneMap zoneMap)
+    {
+        width = zoneMap.HexagonsWidth;
+        height = zoneMap.HexagonsHeight;
+        WorldWidthKm = zoneMap.WorldWidthKm;
+        WorldHeightKm = zoneMap.WorldHeightKm;
+
+        var generator = new MapGenerator
+        {
+            HexagonsWidth = zoneMap.HexagonsWidth,
+            HexagonsHeight = zoneMap.HexagonsHeight,
+            Seed = zoneMap.Seed
+        };
+
+        var mapData = generator.Generate();
+        generator.PlaceLocations(mapData, zoneMap.Locations);
+
+        Generator = generator;
+        Locations = zoneMap.Locations;
+    }
+
     /// <summary>World distance represented by a single tile horizontally.</summary>
     public float KmPerHexX => WorldWidthKm / width;
 
