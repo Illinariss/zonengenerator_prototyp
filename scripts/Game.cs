@@ -13,29 +13,11 @@ public partial class Game : Control
     [Export]
     public Node MapContainerNode { get; set; }
 
-    private static MapRoot CreateMap(int hexagonswidth, int hexagonsheight, float kmwidth, float kmheight, IList<LocationInfo> locations, int seed)
+    private static MapRoot CreateMap(ZoneMap zoneMap)
     {
         var mapScene = GD.Load<PackedScene>("res://scenes/map_root.tscn");
         var mapRoot = mapScene.Instantiate<MapRoot>();
-        mapRoot.WorldWidthKm = kmwidth;
-        mapRoot.WorldHeightKm = kmheight;
-
-
-        var generator = new MapGenerator
-        {
-            HexagonsWidth = hexagonswidth,
-            HexagonsHeight = hexagonsheight,
-            Seed = seed            
-        };
-
-        
-        
-        var mapData = generator.Generate();
-        generator.PlaceLocations(mapData, locations);
-
-        mapRoot.Generator = generator;
-        mapRoot.Locations = locations;
-
+        mapRoot.Initialize(zoneMap);
         return mapRoot;
     }
 
@@ -51,7 +33,8 @@ public partial class Game : Control
             new LocationInfo("Cave", DirectionHint.SouthEast)
         };
 
-        return CreateMap(15, 15, 1500, 1500, locations, 1);
+        var zoneMap = new ZoneMap(15, 15, 1500, 1500, 1, locations);
+        return CreateMap(zoneMap);
     }
 
     /// <summary>
@@ -66,7 +49,8 @@ public partial class Game : Control
             new LocationInfo("Farm", DirectionHint.SouthWest)
         };
 
-        return CreateMap(25, 20, 30000, 20000, locations, 2);
+        var zoneMap = new ZoneMap(25, 20, 30000, 20000, 2, locations);
+        return CreateMap(zoneMap);
     }
 
     /// <summary>
@@ -83,7 +67,8 @@ public partial class Game : Control
             new LocationInfo("Temple", DirectionHint.NorthEast)
         };
 
-        return CreateMap(40, 30, 500_000, 400_000, locations, 3);
+        var zoneMap = new ZoneMap(40, 30, 500_000, 400_000, 3, locations);
+        return CreateMap(zoneMap);
     }
 
     /// <summary>
