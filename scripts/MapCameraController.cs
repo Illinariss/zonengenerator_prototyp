@@ -7,8 +7,8 @@ using System;
 /// </summary>
 public partial class MapCameraController : Camera2D
 {
-    /// <summary>Distance from screen edge that starts scrolling.</summary>
-    [Export] public int ScrollBorder = 20;
+    /// <summary>Size of the edge-scroll activation zone in pixels.</summary>
+    [Export] public int ScrollBorder = 30;
 
     /// <summary>Speed of manual scrolling in pixels per second.</summary>
     [Export] public float ScrollSpeed = 400f;
