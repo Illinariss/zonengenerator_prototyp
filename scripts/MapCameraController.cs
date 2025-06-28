@@ -151,9 +151,9 @@ public partial class MapCameraController : Camera2D
         if (@event is InputEventMouseButton mouse && mouse.Pressed)
         {
             if (mouse.ButtonIndex == MouseButton.WheelUp)
-                AdjustZoom(-0.1f);
-            else if (mouse.ButtonIndex == MouseButton.WheelDown)
                 AdjustZoom(0.1f);
+            else if (mouse.ButtonIndex == MouseButton.WheelDown)
+                AdjustZoom(-0.1f);
         }
     }
 
@@ -177,8 +177,8 @@ public partial class MapCameraController : Camera2D
         if (Map == null)
             return;
 
-        int mapWidth = (Map.Generator != null ? Map.Generator.HexagonsWidth : Map.width) + Map.NebulaRingWidth * 2;
-        int mapHeight = (Map.Generator != null ? Map.Generator.HexagonsHeight : Map.height) + Map.NebulaRingWidth * 2;
+        int mapWidth = (Map.Generator != null ? Map.Generator.HexagonsWidth : Map.ZoneMap.HexagonsWidth) + Map.NebulaRingWidth * 2;
+        int mapHeight = (Map.Generator != null ? Map.Generator.HexagonsHeight : Map.ZoneMap.HexagonsHeight) + Map.NebulaRingWidth * 2;
         var tilemap = Map.GetNode<TileMapLayer>("%TileMap_Visual");
         Vector2 tileSize = tilemap.TileSet.TileSize;
 

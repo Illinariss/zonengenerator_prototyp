@@ -69,12 +69,12 @@ public partial class MapGenerator : Node
     /// clusters to create contiguous hazardous areas.
     /// </summary>
     /// <returns>Dictionary of axial coordinates to zone types.</returns>
-    public Dictionary<Vector2I, Enums.ZoneType> Generate()
+    public Dictionary<Vector2I, ZoneType> Generate()
     {
         RandomNumberGenerator rng = new RandomNumberGenerator();
         rng.Seed = (ulong)Seed;
 
-        Dictionary<Vector2I, Enums.ZoneType> mapData = new Dictionary<Vector2I, Enums.ZoneType>();
+        Dictionary<Vector2I, ZoneType> mapData = new Dictionary<Vector2I, ZoneType>();
 
         var shape = GenerateShape();
         shape = ValidateShape(shape);
@@ -82,12 +82,12 @@ public partial class MapGenerator : Node
         foreach (var axial in shape)
         {
             float roll = rng.Randf();
-            Enums.ZoneType type = roll switch
+            ZoneType type = roll switch
             {
-                < 0.6f => Enums.ZoneType.Safe,
-                < 0.75f => Enums.ZoneType.Water,
-                < 0.9f => Enums.ZoneType.Unpassable,
-                _ => Enums.ZoneType.Safe,
+                < 0.6f => ZoneType.Safe,
+                < 0.75f => ZoneType.Water,
+                < 0.9f => ZoneType.Unpassable,
+                _ => ZoneType.Safe,
             };
 
             mapData[axial] = type;
@@ -97,7 +97,7 @@ public partial class MapGenerator : Node
         List<Vector2I> safeTiles = new List<Vector2I>();
         foreach (var kvp in mapData)
         {
-            if (kvp.Value == Enums.ZoneType.Safe)
+            if (kvp.Value == ZoneType.Safe)
                 safeTiles.Add(kvp.Key);
         }
 
@@ -115,16 +115,16 @@ public partial class MapGenerator : Node
             while (queue.Count > 0 && clusterSize > 0)
             {
                 Vector2I tile = queue.Dequeue();
-                if (!mapData.ContainsKey(tile) || mapData[tile] != Enums.ZoneType.Safe)
+                if (!mapData.ContainsKey(tile) || mapData[tile] != ZoneType.Safe)
                     continue;
 
-                mapData[tile] = Enums.ZoneType.Dangerous;
+                mapData[tile] = ZoneType.Dangerous;
                 desiredDanger--;
                 clusterSize--;
 
                 foreach (var neighbor in HexUtils.GetNeighbors(tile))
                 {
-                    if (mapData.TryGetValue(neighbor, out var zone) && zone == Enums.ZoneType.Safe)
+                    if (mapData.TryGetValue(neighbor, out var zone) && zone == ZoneType.Safe)
                         queue.Enqueue(neighbor);
                 }
             }
@@ -136,7 +136,7 @@ public partial class MapGenerator : Node
             Vector2I tile = safeTiles[index];
             safeTiles.RemoveAt(index);
 
-            mapData[tile] = Enums.ZoneType.Dangerous;
+            mapData[tile] = ZoneType.Dangerous;
             desiredDanger--;
         }
 
@@ -146,7 +146,7 @@ public partial class MapGenerator : Node
         return mapData;
     }
 
-    private void PlaceTransitions(Dictionary<Vector2I, Enums.ZoneType> mapData)
+    private void PlaceTransitions(Dictionary<Vector2I, ZoneType> mapData)
     {
         TransitionTiles.Clear();
 
@@ -160,7 +160,7 @@ public partial class MapGenerator : Node
 
         foreach (var kvp in mapData)
         {
-            if (kvp.Value == Enums.ZoneType.Unpassable || kvp.Value == Enums.ZoneType.Water)
+            if (kvp.Value == ZoneType.Unpassable || kvp.Value == ZoneType.Water)
                 continue;
 
             var offset = HexUtils.AxialToOffset(kvp.Key);
@@ -191,7 +191,7 @@ public partial class MapGenerator : Node
     /// </summary>
     /// <param name="mapData">Generated zone data.</param>
     /// <param name="locations">Locations to place.</param>
-    public void PlaceLocations(Dictionary<Vector2I, Enums.ZoneType> mapData, IList<LocationInfo> locations)
+    public void PlaceLocations(Dictionary<Vector2I, ZoneType> mapData, IList<LocationInfo> locations)
     {
         RandomNumberGenerator rng = new RandomNumberGenerator();
         rng.Seed = (ulong)Seed;
@@ -202,7 +202,7 @@ public partial class MapGenerator : Node
 
             foreach (var kvp in mapData)
             {
-                if (kvp.Value == Enums.ZoneType.Unpassable || kvp.Value == Enums.ZoneType.Water)
+                if (kvp.Value == ZoneType.Unpassable || kvp.Value == ZoneType.Water)
                     continue;
 
                 Vector2I offset = HexUtils.AxialToOffset(kvp.Key);
@@ -253,12 +253,12 @@ public partial class MapGenerator : Node
     /// by unpassable or missing tiles.
     /// </summary>
     /// <param name="mapData">Zone dictionary to modify.</param>
-    private void RemoveIsolatedTiles(Dictionary<Vector2I, Enums.ZoneType> mapData)
+    private void RemoveIsolatedTiles(Dictionary<Vector2I, ZoneType> mapData)
     {
         Vector2I? start = null;
         foreach (var kvp in mapData)
         {
-            if (kvp.Value != Enums.ZoneType.Unpassable && kvp.Value != Enums.ZoneType.Water)
+            if (kvp.Value != ZoneType.Unpassable && kvp.Value != ZoneType.Water)
             {
                 start = kvp.Key;
                 break;
@@ -280,7 +280,7 @@ public partial class MapGenerator : Node
             {
                 if (!mapData.TryGetValue(neighbor, out var zone))
                     continue;
-                if (zone == Enums.ZoneType.Unpassable || zone == Enums.ZoneType.Water)
+                if (zone == ZoneType.Unpassable || zone == ZoneType.Water)
                     continue;
                 if (reachable.Add(neighbor))
                     queue.Enqueue(neighbor);
@@ -291,7 +291,7 @@ public partial class MapGenerator : Node
         foreach (var key in keys)
         {
             var zone = mapData[key];
-            if (zone == Enums.ZoneType.Unpassable || zone == Enums.ZoneType.Water)
+            if (zone == ZoneType.Unpassable || zone == ZoneType.Water)
                 continue;
             if (!reachable.Contains(key))
                 mapData.Remove(key);

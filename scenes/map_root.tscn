@@ -6,17 +6,15 @@
 [ext_resource type="TileSet" uid="uid://h4m3bkbos37e" path="res://tilesets/fog_tile_set.tres" id="3_2rd5c"]
 [ext_resource type="TileSet" uid="uid://d3241dpbnefp0" path="res://tilesets/overlay_tile_set.tres" id="4_22de6"]
 [ext_resource type="Script" uid="uid://yav4tb6k3u8y" path="res://scripts/MapCameraController.cs" id="5_cam"]
-[ext_resource type="TileSet" path="res://tilesets/nebula_tile_set.tres" id="6_nebula"]
+[ext_resource type="TileSet" uid="uid://b17shxfugjd" path="res://tilesets/nebula_tile_set.tres" id="6_nebula"]
 
 [node name="MapRoot" type="Node2D"]
 script = ExtResource("1_155yj")
-width = 10
-height = 10
 
 [node name="TileMap_Nebula" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
-tile_set = ExtResource("6_nebula")
 z_index = -1
+tile_set = ExtResource("6_nebula")
 
 [node name="TileMap_Visual" type="TileMapLayer" parent="."]
 unique_name_in_owner = true

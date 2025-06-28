@@ -9,28 +9,12 @@ using System.Linq;
 /// </summary>
 public partial class MapRoot : Node2D
 {
-    /// <summary>Number of horizontal tiles.</summary>
-    [Export]
-    public int width = 100;
-
-    /// <summary>Number of vertical tiles.</summary>
-    [Export]
-    public int height = 60;
-
-    /// <summary>Width of the world in kilometres.</summary>
-    [Export]
-    public float WorldWidthKm = 100f;
-
-    /// <summary>Height of the world in kilometres.</summary>
-    [Export]
-    public float WorldHeightKm = 60f;
-
-    /// <summary>Generator used to create terrain and transitions.</summary>
-    [Export]
-    public MapGenerator? Generator;
-
-    /// <summary>List of locations that can appear on the map.</summary>
-    public IList<LocationInfo>? Locations { get; set; }
+    /// <summary>Generator used to create terrain and transitions.</summary>    
+    public MapGenerator Generator;
+    /// <summary>
+    /// ZoneMap for Mapdata
+    /// </summary>
+    public ZoneMap ZoneMap;
 
     /// <summary>
     /// Applies settings from the provided <see cref="ZoneMap"/>.
@@ -38,11 +22,7 @@ public partial class MapRoot : Node2D
     /// <param name="zoneMap">Description of the map to initialize.</param>
     public void Initialize(ZoneMap zoneMap)
     {
-        width = zoneMap.HexagonsWidth;
-        height = zoneMap.HexagonsHeight;
-        WorldWidthKm = zoneMap.WorldWidthKm;
-        WorldHeightKm = zoneMap.WorldHeightKm;
-
+        this.ZoneMap = zoneMap;
         var generator = new MapGenerator
         {
             HexagonsWidth = zoneMap.HexagonsWidth,
@@ -52,16 +32,14 @@ public partial class MapRoot : Node2D
 
         var mapData = generator.Generate();
         generator.PlaceLocations(mapData, zoneMap.Locations);
-
         Generator = generator;
-        Locations = zoneMap.Locations;
     }
 
     /// <summary>World distance represented by a single tile horizontally.</summary>
-    public float KmPerHexX => WorldWidthKm / width;
+    public float KmPerHexX => ZoneMap.WorldWidthKm / ZoneMap.HexagonsWidth;
 
     /// <summary>World distance represented by a single tile vertically.</summary>
-    public float KmPerHexY => WorldHeightKm / height;
+    public float KmPerHexY => ZoneMap.WorldHeightKm / ZoneMap.HexagonsHeight;
 
     /// <summary>Area in square kilometres represented by a tile.</summary>
     public float KmPerHexArea => KmPerHexX * KmPerHexY;
@@ -71,7 +49,7 @@ public partial class MapRoot : Node2D
     public int NebulaRingWidth = 10;
 
     TileMapLayer visual, logic, fog, overlay, nebula;
-    Dictionary<Vector2I, Enums.ZoneType> zoneData = new();
+    Dictionary<Vector2I, ZoneType> zoneData = new();
     Dictionary<Vector2I, string> transitions = new();
     Dictionary<Vector2I, LocationInfo> locationLookup = new();
     HashSet<Vector2I> discoveredLocationTiles = new();
@@ -270,8 +248,8 @@ public partial class MapRoot : Node2D
         distanceTravelledKm = 0f;
         lastVisitedTile = null;
 
-        float mapRatio = (float)width / Mathf.Max(1, height);
-        float worldRatio = WorldWidthKm / Mathf.Max(0.0001f, WorldHeightKm);
+        float mapRatio = (float)ZoneMap.HexagonsWidth / Mathf.Max(1, ZoneMap.HexagonsHeight);
+        float worldRatio = ZoneMap.WorldWidthKm / Mathf.Max(0.0001f, ZoneMap.WorldHeightKm);
         float deviation = Mathf.Abs(mapRatio - worldRatio) / mapRatio;
         if (deviation > 0.25f)
             throw new InvalidOperationException("World dimension ratio does not match map aspect ratio");
@@ -290,13 +268,13 @@ public partial class MapRoot : Node2D
         {
             zoneData = new();
             List<Vector2I> temp = new();
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < ZoneMap.HexagonsWidth; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < ZoneMap.HexagonsHeight; y++)
                 {
                     var ax = HexUtils.OffsetToAxial(new Vector2I(x, y));
                     temp.Add(ax);
-                    zoneData[ax] = Enums.ZoneType.Safe;
+                    zoneData[ax] = ZoneType.Safe;
                 }
             }
             axialCoords = temp;
@@ -309,13 +287,13 @@ public partial class MapRoot : Node2D
             var coords = HexUtils.AxialToOffset(axial);
             Vector2I visualTile = zoneData[axial] switch
             {
-                Enums.ZoneType.Unpassable => new Vector2I(1, 0),
-                Enums.ZoneType.Dangerous => new Vector2I(1, 2),
-                Enums.ZoneType.Safe =>
+                ZoneType.Unpassable => new Vector2I(1, 0),
+                ZoneType.Dangerous => new Vector2I(1, 2),
+                ZoneType.Safe =>
                     rng.RandiRange(0, 1) == 0
                         ? new Vector2I(2, 2)
                         : new Vector2I(3, 2),
-                Enums.ZoneType.Water => new Vector2I(0, 2),
+                ZoneType.Water => new Vector2I(0, 2),
                 _ => new Vector2I(2, 2)
             };
 
@@ -325,16 +303,13 @@ public partial class MapRoot : Node2D
             logic.SetCell(coords, 0, new Vector2I((int)zoneData[axial], 0));
             usedtiles.Add(coords);
         }
-
-        locationLookup.Clear();
-        if (Locations != null)
+        if (ZoneMap.Locations != null)
         {
-            foreach (var loc in Locations)
+            foreach (var loc in ZoneMap.Locations)
             {
                 locationLookup[loc.Coordinates] = loc;
             }
         }
-
         CreateNebulaRing();
     }
 
@@ -414,8 +389,8 @@ public partial class MapRoot : Node2D
         return Pathfinder.FindPath(startAxial, targetAxial, ax =>
         {
             return zoneData.ContainsKey(ax)
-                && zoneData[ax] != Enums.ZoneType.Unpassable
-                && zoneData[ax] != Enums.ZoneType.Water;
+                && zoneData[ax] != ZoneType.Unpassable
+                && zoneData[ax] != ZoneType.Water;
         });
     }
 
@@ -512,11 +487,11 @@ public partial class MapRoot : Node2D
     /// </summary>
     private void CreateNebulaRing()
     {
-        for (int x = -NebulaRingWidth; x < width + NebulaRingWidth; x++)
+        for (int x = -NebulaRingWidth; x < ZoneMap.HexagonsWidth + NebulaRingWidth; x++)
         {
-            for (int y = -NebulaRingWidth; y < height + NebulaRingWidth; y++)
+            for (int y = -NebulaRingWidth; y < ZoneMap.HexagonsHeight + NebulaRingWidth; y++)
             {
-                if (x >= 0 && y >= 0 && x < width && y < height)
+                if (x >= 0 && y >= 0 && x < ZoneMap.HexagonsWidth && y < ZoneMap.HexagonsHeight)
                     continue;
 
                 nebula.SetCell(new Vector2I(x, y), 0, new Vector2I(0, 0));

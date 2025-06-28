@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_uwrxv")
-MapContainerNode = NodePath("PanelContainer/MarginContainer/MapContainer/MapViewport")
+MapContainerNode = NodePath("PanelContainer/MapContainer/MapViewport")
 
 [node name="GridContainer" type="GridContainer" parent="."]
 layout_mode = 2
@@ -42,35 +42,15 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 50
-theme_override_constants/margin_top = 50
-theme_override_constants/margin_right = 50
-theme_override_constants/margin_bottom = 50
-
-[node name="MapContainer" type="SubViewportContainer" parent="PanelContainer/MarginContainer"]
+[node name="MapContainer" type="SubViewportContainer" parent="PanelContainer"]
 layout_mode = 2
 stretch = true
 mouse_target = true
 
-[node name="MapViewport" type="SubViewport" parent="PanelContainer/MarginContainer/MapContainer"]
+[node name="MapViewport" type="SubViewport" parent="PanelContainer/MapContainer"]
 handle_input_locally = false
-size = Vector2i(1052, 500)
+size = Vector2i(1152, 600)
 render_target_update_mode = 4
-
-[node name="RecenterButton" type="Button" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -110.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = 40.0
-grow_horizontal = 0
-text = "Recenter"
 
 [connection signal="pressed" from="GridContainer/ButtonSmall" to="." method="_on_small_map_pressed"]
 [connection signal="pressed" from="GridContainer/ButtonMedium" to="." method="_on_medium_map_pressed"]
